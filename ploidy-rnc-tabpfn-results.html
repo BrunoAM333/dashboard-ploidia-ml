@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RNC + TabPFN · Ploidia Embrionária</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:          #080E1A;
+  --bg-card:     #0D1526;
+  --bg-deep:     #060B14;
+  --bg-lift:     #111E35;
+  --blue:        #3B82F6;
+  --blue-mid:    #60A5FA;
+  --blue-bright: #93C5FD;
+  --blue-dim:    rgba(59,130,246,0.10);
+  --blue-border: rgba(59,130,246,0.28);
+  --navy:        #1E3A5F;
+  --navy-mid:    #1D4ED8;
+  --cyan:        #06B6D4;
+  --cyan-dim:    rgba(6,182,212,0.10);
+  --violet:      #818CF8;
+  --violet-dim:  rgba(129,140,248,0.10);
+  --gold:        #F59E0B;
+  --gold-dim:    rgba(245,158,11,0.10);
+  --red-lt:      #F87171;
+  --text:        #E2E8F0;
+  --text-2:      #94A3B8;
+  --text-3:      #475569;
+  --border:      rgba(59,130,246,0.15);
+  --border-blue: rgba(59,130,246,0.30);
+  --r: 10px; --r-lg: 16px; --r-xl: 22px;
+  --fD: 'Space Grotesk', system-ui, sans-serif;
+  --fB: 'Inter', system-ui, sans-serif;
+  --fM: 'JetBrains Mono', monospace;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  background-image:
+    radial-gradient(circle at 15% 20%, rgba(59,130,246,0.06) 0%, transparent 50%),
+    radial-gradient(circle at 85% 80%, rgba(6,182,212,0.04) 0%, transparent 50%);
+  color: var(--text); font-family: var(--fB); font-size: 14px;
+  line-height: 1.65; overflow-x: hidden; -webkit-font-smoothing: antialiased;
+}
+nav {
+  position: sticky; top: 0; z-index: 200; height: 50px;
+  display: flex; align-items: center; justify-content: space-between; padding: 0 40px;
+  background: rgba(8,14,26,0.96); backdrop-filter: blur(18px);
+  border-bottom: 1px solid var(--border); box-shadow: 0 1px 20px rgba(0,0,0,0.4);
+}
+.nav-brand {
+  font-family: var(--fM); font-size: 11px; font-weight: 500;
+  letter-spacing: 0.18em; color: var(--blue-mid); text-transform: uppercase;
+  display: flex; align-items: center; gap: 10px;
+}
+.nav-brand::before {
+  content: ''; width: 7px; height: 7px; border-radius: 50%;
+  background: var(--blue); box-shadow: 0 0 10px var(--blue);
+  animation: blink 2.4s ease-in-out infinite;
+}
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.25} }
+.nav-chips { display: flex; gap: 8px; }
+.nav-chip {
+  font-family: var(--fM); font-size: 10px; padding: 3px 10px; border-radius: 99px;
+  background: var(--blue-dim); border: 1px solid var(--blue-border); color: var(--blue-mid);
+}
+.nav-chip.c { background: var(--cyan-dim); border-color: rgba(6,182,212,0.3); color: var(--cyan); }
+.nav-chip.v { background: var(--violet-dim); border-color: rgba(129,140,248,0.3); color: var(--violet); }
+
+.hero {
+  position: relative; min-height: 380px;
+  display: flex; align-items: center; padding: 72px 40px 56px; overflow: hidden;
+}
+#hero-canvas { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.hero::after {
+  content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 120px;
+  background: linear-gradient(to bottom, transparent, var(--bg)); pointer-events: none;
+}
+.hero-inner {
+  position: relative; z-index: 1; max-width: 1080px; margin: 0 auto; width: 100%;
+  display: grid; grid-template-columns: 1fr 252px; gap: 48px; align-items: center;
+}
+.hero-eyebrow {
+  font-family: var(--fM); font-size: 10px; letter-spacing: 0.2em;
+  color: var(--blue-mid); text-transform: uppercase; margin-bottom: 18px;
+  display: flex; align-items: center; gap: 10px;
+}
+.hero-eyebrow::before { content: ''; display: inline-block; width: 24px; height: 1px; background: var(--blue); }
+h1.hero-title { font-family: var(--fD); font-size: clamp(28px,4vw,44px); font-weight: 700; line-height: 1.12; color: var(--text); margin-bottom: 16px; }
+h1.hero-title em { font-style: normal; background: linear-gradient(135deg, var(--blue) 0%, var(--blue-mid) 55%, var(--cyan) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.hero-sub { font-size: 13.5px; color: var(--text-2); max-width: 500px; line-height: 1.75; }
+.hero-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
+.hero-tag { font-family: var(--fM); font-size: 10px; padding: 4px 10px; border-radius: 99px; background: var(--blue-dim); border: 1px solid var(--blue-border); color: var(--blue-mid); }
+.hero-tag.v { background: var(--violet-dim); border-color: rgba(129,140,248,0.3); color: var(--violet); }
+.hero-card {
+  background: var(--bg-card); border: 1px solid var(--blue-border);
+  border-radius: var(--r-xl); padding: 28px 28px 24px;
+  box-shadow: 0 4px 32px rgba(0,0,0,0.5), 0 0 0 1px var(--blue-border), inset 0 1px 0 rgba(255,255,255,0.04);
+  position: relative; overflow: hidden;
+}
+.hero-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, var(--blue), var(--cyan)); }
+.hero-card::after { content: ''; position: absolute; top: -60px; right: -60px; width: 180px; height: 180px; border-radius: 50%; background: radial-gradient(circle, rgba(59,130,246,0.08) 0%, transparent 70%); pointer-events: none; }
+.hc-label { font-family: var(--fM); font-size: 9px; letter-spacing: 0.16em; color: var(--blue-mid); text-transform: uppercase; margin-bottom: 10px; }
+.hc-auc { font-family: var(--fM); font-size: 52px; font-weight: 500; color: var(--text); line-height: 1; margin-bottom: 3px; }
+.hc-auc span { font-size: 22px; color: var(--blue-mid); }
+.hc-model { font-size: 11px; color: var(--text-2); margin-bottom: 3px; font-weight: 600; }
+.hc-sub   { font-size: 10px; color: var(--text-3); margin-bottom: 20px; }
+.hc-prog-labels { display: flex; justify-content: space-between; font-family: var(--fM); font-size: 9px; color: var(--text-3); margin-bottom: 6px; }
+.hc-track { height: 6px; border-radius: 99px; background: rgba(255,255,255,0.06); position: relative; }
+.hc-fill { height: 100%; border-radius: 99px; background: linear-gradient(90deg, var(--blue), var(--cyan)); width: 0; transition: width 1.4s cubic-bezier(.4,0,.2,1) .4s; position: relative; }
+.hc-fill::after { content: ''; position: absolute; right: 0; top: 50%; transform: translate(50%,-50%); width: 10px; height: 10px; border-radius: 50%; background: var(--blue-mid); box-shadow: 0 0 8px var(--blue); }
+
+.main { max-width: 1080px; margin: 0 auto; padding: 0 40px 100px; }
+
+.sec { margin-bottom: 64px; opacity: 0; transform: translateY(16px); transition: opacity .5s, transform .5s; }
+.sec.show { opacity: 1; transform: none; }
+.sec-hd { display: flex; align-items: baseline; gap: 14px; margin-bottom: 24px; padding-bottom: 12px; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
+.sec-num { font-family: var(--fM); font-size: 10px; color: var(--blue); opacity: .6; }
+.sec-ttl { font-family: var(--fD); font-size: 18px; font-weight: 600; color: var(--text); }
+.sec-pill { margin-left: auto; font-family: var(--fM); font-size: 10px; padding: 3px 10px; border-radius: 99px; background: var(--blue-dim); color: var(--blue-mid); border: 1px solid var(--blue-border); }
+.sec-desc { font-size: 12.5px; color: var(--text-2); line-height: 1.75; max-width: 760px; margin-bottom: 20px; border-left: 3px solid var(--blue-border); padding-left: 14px; }
+
+.stat-grid   { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; margin-bottom: 16px; }
+.stat-grid-5 { display: grid; grid-template-columns: repeat(5,1fr); gap: 12px; margin-bottom: 16px; }
+.stat-card {
+  background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--r);
+  padding: 18px 20px; position: relative; overflow: hidden;
+  transition: border-color .2s, transform .2s, box-shadow .2s;
+}
+.stat-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; }
+.stat-card.b::before { background: var(--blue); }
+.stat-card.m::before { background: var(--blue-mid); }
+.stat-card.c::before { background: var(--cyan); }
+.stat-card.v::before { background: var(--violet); }
+.stat-card.g::before { background: var(--gold); }
+.stat-card:hover { box-shadow: 0 4px 20px rgba(59,130,246,0.15); transform: translateY(-2px); border-color: var(--blue-border); }
+.sc-lbl { font-family: var(--fM); font-size: 9px; letter-spacing: .12em; text-transform: uppercase; color: var(--text-2); margin-bottom: 8px; }
+.sc-val { font-family: var(--fD); font-size: 26px; font-weight: 700; line-height: 1; margin-bottom: 4px; }
+.sc-val.b  { color: var(--blue-mid); }
+.sc-val.c  { color: var(--cyan); }
+.sc-val.v  { color: var(--violet); }
+.sc-val.g  { color: var(--gold); }
+.sc-sub { font-size: 11px; color: var(--text-3); }
+
+.tbl-wrap { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--r-lg); overflow: hidden; }
+table.results { width: 100%; border-collapse: collapse; font-size: 12px; }
+table.results thead th { font-family: var(--fM); font-size: 9px; letter-spacing: .1em; text-transform: uppercase; color: var(--text-2); text-align: left; padding: 11px 16px; border-bottom: 1px solid var(--border); background: var(--bg-deep); }
+table.results tbody tr { border-bottom: 1px solid rgba(59,130,246,0.07); transition: background .15s; }
+table.results tbody tr:hover { background: rgba(59,130,246,0.06); }
+table.results tbody tr.champ-row { background: rgba(59,130,246,0.08); }
+table.results tbody tr:last-child { border-bottom: none; }
+table.results td { padding: 10px 16px; color: var(--text); }
+.td-rank { font-family: var(--fM); font-size: 11px; color: var(--blue-mid); }
+.td-model strong { display: block; font-size: 12px; font-weight: 600; color: var(--text); margin-bottom: 2px; }
+.td-model small  { font-family: var(--fM); font-size: 10px; color: var(--text-3); }
+.td-num { font-family: var(--fM); font-size: 11px; color: var(--text); white-space: nowrap; }
+.td-num.hi { color: var(--blue-mid); font-weight: 600; }
+.badge-champ { display: inline-flex; align-items: center; font-family: var(--fM); font-size: 9px; color: var(--blue-mid); background: var(--blue-dim); border: 1px solid var(--blue-border); border-radius: 99px; padding: 2px 8px; margin-left: 8px; vertical-align: middle; }
+.mini-bar { height: 5px; border-radius: 99px; background: rgba(255,255,255,0.07); min-width: 70px; overflow: hidden; }
+.mini-bar-fill { height: 100%; border-radius: 99px; background: linear-gradient(90deg, var(--blue), var(--blue-mid)); }
+
+.insight-grid { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 18px; }
+.callout-card { background: var(--bg-card); border: 1px solid var(--blue-border); border-radius: var(--r-lg); padding: 26px; position: relative; overflow: hidden; }
+.callout-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, var(--blue), var(--cyan)); }
+.callout-card h3 { font-family: var(--fD); font-size: 15px; font-weight: 600; color: var(--text); margin-bottom: 12px; }
+.callout-card p  { font-size: 13px; color: var(--text-2); line-height: 1.75; margin-bottom: 10px; }
+.callout-card p:last-child { margin-bottom: 0; }
+.callout-card strong { color: var(--text); font-weight: 600; }
+.val-table { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--r-lg); overflow: hidden; }
+
+.met-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; }
+.met-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--r); padding: 15px 17px; transition: box-shadow .2s, transform .2s, border-color .2s; }
+.met-card:hover { box-shadow: 0 4px 16px rgba(59,130,246,0.12); transform: translateY(-2px); border-color: var(--blue-border); }
+.met-tag { display: inline-block; font-family: var(--fM); font-size: 9px; font-weight: 500; padding: 3px 9px; border-radius: 5px; margin-bottom: 9px; }
+.t-eff  { background:rgba(59,130,246,0.15);  color:var(--blue-mid); }
+.t-ens  { background:rgba(129,140,248,0.15); color:var(--violet); }
+.t-res  { background:rgba(245,158,11,0.15);  color:var(--gold); }
+.t-xce  { background:rgba(6,182,212,0.15);   color:var(--cyan); }
+.met-name { font-family: var(--fD); font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 3px; }
+.met-visual { font-family: var(--fM); font-size: 10px; color: var(--text-3); margin-bottom: 2px; }
+
+footer { max-width: 1080px; margin: 0 auto; padding: 20px 40px 40px; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; font-family: var(--fM); font-size: 10px; color: var(--text-3); }
+
+@media(max-width:860px) {
+  .hero-inner, .insight-grid { grid-template-columns: 1fr; }
+  .stat-grid, .stat-grid-5, .met-grid { grid-template-columns: repeat(2,1fr); }
+  nav, .main, .hero { padding-left: 20px; padding-right: 20px; }
+  footer { flex-direction: column; gap: 8px; }
+}
+@media(max-width:520px) { .stat-grid, .stat-grid-5, .met-grid { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-brand">RNC + TabPFN · Ploidia</div>
+  <div class="nav-chips">
+    <span class="nav-chip">26 metodologias</span>
+    <span class="nav-chip c">Blind test · n=1000</span>
+    <span class="nav-chip v">TabPFN Config 027</span>
+  </div>
+</nav>
+
+<div class="hero">
+  <canvas id="hero-canvas"></canvas>
+  <div class="hero-inner">
+    <div>
+      <div class="hero-eyebrow">Research Dashboard · RNC + TabPFN</div>
+      <h1 class="hero-title">Ploidia embrionária:<br><em>RNC + TabPFN</em></h1>
+      <p class="hero-sub">Ranking por ROC-AUC de teste com embeddings visuais de EfficientNet-B0, Xception e ResNet50 combinados com TabPFN Config 027. 26 combinações avaliadas em blind test.</p>
+      <div class="hero-tags">
+        <span class="hero-tag">EfficientNet-B0</span>
+        <span class="hero-tag">Xception · ResNet50</span>
+        <span class="hero-tag v">Optuna · Blind test</span>
+      </div>
+    </div>
+    <aside class="hero-card">
+      <div class="hc-label">Maior ROC-AUC · Teste</div>
+      <div class="hc-auc">69.4<span>%</span></div>
+      <div class="hc-model">EfficientNet-B0 + TabPFN 027</div>
+      <div class="hc-sub">trofectoderme + mci + blastocele</div>
+      <div class="hc-prog-labels"><span>50%</span><span>→ Meta 75%</span><span>100%</span></div>
+      <div class="hc-track"><div class="hc-fill" id="hc-fill"></div></div>
+    </aside>
+  </div>
+</div>
+
+<main class="main">
+
+  <section class="sec show">
+    <div class="sec-hd"><span class="sec-num">01</span><span class="sec-ttl">Visão Geral</span><span class="sec-pill">4 métricas-chave</span></div>
+    <div class="stat-grid">
+      <div class="stat-card b"><div class="sc-lbl">Maior ROC-AUC Teste</div><div class="sc-val b">69.4%</div><div class="sc-sub">EfficientNet-B0 + TabPFN 027 · TE+MCI+BL</div></div>
+      <div class="stat-card m"><div class="sc-lbl">Melhor ROC-AUC Val.</div><div class="sc-val b">69.3%</div><div class="sc-sub">EfficientNet-B0 + TabPFN 027 · TE+BL</div></div>
+      <div class="stat-card v"><div class="sc-lbl">TabPFN Blind Test</div><div class="sc-val v">69.2%</div><div class="sc-sub">n=1000 · todas_seguras</div></div>
+      <div class="stat-card"><div class="sc-lbl">Metodologias</div><div class="sc-val" style="color:var(--text)">26</div><div class="sc-sub">ranking_global.xlsx</div></div>
+    </div>
+  </section>
+
+  <section class="sec">
+    <div class="sec-hd"><span class="sec-num">02</span><span class="sec-ttl">Ranking por ROC-AUC — Top 12</span><span class="sec-pill">Melhor: 69.4%</span></div>
+    <p class="sec-desc">Ordenado por ROC-AUC de teste. A coluna de validação permite checar estabilidade entre splits. EfficientNet-B0 domina o topo com concordância consistente.</p>
+    <div class="tbl-wrap">
+      <table class="results">
+        <thead><tr><th>#</th><th>Modelo</th><th>ROC Teste</th><th>ROC Val.</th><th>Bal. Acc.</th><th>Sens.</th><th>Esp.</th><th>Força</th></tr></thead>
+        <tbody>
+          <tr class="champ-row"><td class="td-rank">1</td><td class="td-model"><strong>EfficientNet-B0 + TabPFN Config 027 <span class="badge-champ">★ MELHOR</span></strong><small>trofectoderme + mci + blastocele · conjunto_original</small></td><td class="td-num hi">69.4%</td><td class="td-num">68.9%</td><td class="td-num">64.4%</td><td class="td-num">82.9%</td><td class="td-num">45.8%</td><td><div class="mini-bar"><div class="mini-bar-fill" style="width:69.4%"></div></div></td></tr>
+          <tr><td class="td-rank">2</td><td class="td-model"><strong>EfficientNet-B0 + TabPFN Config 027</strong><small>trofectoderme + mci · tf_mci</small></td><td class="td-num hi">69.1%</td><td class="td-num">68.5%</td><td class="td-num">63.4%</td><td class="td-num">68.2%</td><td class="td-num">58.7%</td><td><div class="mini-bar"><div class="mini-bar-fill" style="width:69.1%"></div></div></td></tr>
+          <tr><td class="td-rank">3</td><td class="td-model"><strong>EfficientNet-B0 + TabPFN Config 027</strong><small>trofectoderme + blastocele · tf_bl</small></td><td class="td-num hi">68.9%</td><td class="td-num">69.3%</td><td class="td-num">63.4%</td><td class="td-num">58.7%</td><td class="td-num">68.1%</td><td><div class="mini-bar"><div class="mini-bar-fill" style="width:68.9%"></div></div></td></tr>
+          <tr><td class="td-rank">4</td><td class="td-model"><strong>EfficientNet-B0 + TabPFN Config 027</strong><small>blastocele · bl</small></td><td class="td-num hi">68.8%</td><td class="td-num">66.3%</td><td class="td-num">63.0%</td><td class="td-num">69.9%</td><td class="td-num">56.0%</td><td><div class="mini-bar"><div class="mini-bar-fill" style="width:68.8%"></div></div></td></tr>
+          <tr><td class="td-rank">5</td><td class="td-model"><strong>Ensemble 3 RNCs + TabPFN Config 027</strong><small>trofectoderme + mci + blastocele</small></td><td class="td-num hi">68.5%</td><td class="td-num">66.4%</td><td class="td-num">63.7%</td><td class="td-num">51.7%</td><td class="td-num">75.6%</td><td><div class="mini-bar"><div class="mini-bar-fill" style="width:68.5%"></div></div></td></tr>
+          <tr><td class="td-rank">6</td><td class="td-model"><strong>Xception + TabPFN Config 027</strong><small>trofectoderme + mci + blastocele</small></td><td class="td-num hi">68.1%</td><td class="td-num">66.3%</td><td class="td-num">62.4%</td><td class="td-num">72.5%</td><td class="td-num">52.3%</td><td><div class="mini-bar"><div class="mini-bar-fill" style="width:68.1%"></div></div></td></tr>
+          <tr><td class="td-rank">7</td><td class="td-model"><strong>Ensemble 3 RNCs + TabPFN Config 027</strong><small>trofectoderme + mci</small></td><td class="td-num hi">68.0%</td><td class="td-num">66.6%</td><td class="td-num">62.8%</td><td class="td-num">66.8%</td><td class="td-num">58.8%</td><td><div class="mini-bar"><div class="mini-bar-fill" style="width:68.0%"></div></div></td></tr>
+          <tr><td class="td-rank">8</td><td class="td-model"><strong>EfficientNet-B0 + TabPFN Config 027</strong><small>trofectoderme · tf</small></td><td class="td-num hi">68.0%</td><td class="td-num">67.5%</td><td class="td-num">62.3%</td><td class="td-num">65.0%</td><td class="td-num">59.6%</td><td><div class="mini-bar"><div class="mini-bar-fill" style="width:68.0%"></div></div></td></tr>
+          <tr><td class="td-rank">9</td><td class="td-model"><strong>Ensemble 3 RNCs + TabPFN Config 027</strong><small>blastocele · bl</small></td><td class="td-num hi">68.0%</td><td class="td-num">66.7%</td><td class="td-num">64.0%</td><td class="td-num">75.4%</td><td class="td-num">52.5%</td><td><div class="mini-bar"><div class="mini-bar-fill" style="width:68.0%"></div></div></td></tr>
+          <tr><td class="td-rank">10</td><td class="td-model"><strong>Xception + TabPFN Config 027</strong><small>mci · mci</small></td><td class="td-num hi">67.7%</td><td class="td-num">66.7%</td><td class="td-num">63.9%</td><td class="td-num">69.7%</td><td class="td-num">58.1%</td><td><div class="mini-bar"><div class="mini-bar-fill" style="width:67.7%"></div></div></td></tr>
+          <tr><td class="td-rank">11</td><td class="td-model"><strong>EfficientNet-B0 + TabPFN Config 027</strong><small>mci · mci</small></td><td class="td-num hi">67.7%</td><td class="td-num">65.4%</td><td class="td-num">62.8%</td><td class="td-num">63.0%</td><td class="td-num">62.7%</td><td><div class="mini-bar"><div class="mini-bar-fill" style="width:67.7%"></div></div></td></tr>
+          <tr><td class="td-rank">12</td><td class="td-model"><strong>Ensemble 3 RNCs + TabPFN Config 027</strong><small>trofectoderme · tf</small></td><td class="td-num hi">67.4%</td><td class="td-num">66.5%</td><td class="td-num">63.4%</td><td class="td-num">70.2%</td><td class="td-num">56.5%</td><td><div class="mini-bar"><div class="mini-bar-fill" style="width:67.4%"></div></div></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="sec">
+    <div class="sec-hd"><span class="sec-num">03</span><span class="sec-ttl">Análise: Teste vs. Validação</span></div>
+    <div class="insight-grid">
+      <div class="callout-card">
+        <h3>Leitura principal — RNC + TabPFN</h3>
+        <p>O maior ROC-AUC de teste foi <strong>69.4%</strong> com <strong>EfficientNet-B0 + TabPFN Config 027</strong> usando trofectoderme + mci + blastocele. O melhor pela validação foi o mesmo modelo com TE+BL (69.3% val → 68.9% teste), demonstrando boa estabilidade.</p>
+        <p>O <strong>TabPFN standalone</strong> atingiu 69.2% ROC-AUC no blind test — quase idêntico ao melhor multimodal. Isso revela que <strong>o sinal tabular continua dominante</strong> mesmo sem imagens.</p>
+      </div>
+      <div class="val-table">
+        <table class="results">
+          <thead><tr><th>#</th><th>Top por Validação</th><th>ROC Val.</th><th>ROC Teste</th></tr></thead>
+          <tbody>
+            <tr class="champ-row"><td class="td-rank">1</td><td class="td-model"><strong>EfficientNet-B0 + TabPFN 027</strong><small>trofectoderme + blastocele</small></td><td class="td-num hi">69.3%</td><td class="td-num">68.9%</td></tr>
+            <tr><td class="td-rank">2</td><td class="td-model"><strong>EfficientNet-B0 + TabPFN 027</strong><small>trofectoderme + mci + blastocele</small></td><td class="td-num">68.9%</td><td class="td-num hi">69.4%</td></tr>
+            <tr><td class="td-rank">3</td><td class="td-model"><strong>EfficientNet-B0 + TabPFN 027</strong><small>trofectoderme + mci</small></td><td class="td-num">68.5%</td><td class="td-num">69.1%</td></tr>
+            <tr><td class="td-rank">4</td><td class="td-model"><strong>ResNet50 + TabPFN 027</strong><small>blastocele</small></td><td class="td-num">67.9%</td><td class="td-num">66.1%</td></tr>
+            <tr><td class="td-rank">5</td><td class="td-model"><strong>Xception + TabPFN 027</strong><small>blastocele</small></td><td class="td-num">67.6%</td><td class="td-num">67.4%</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec">
+    <div class="sec-hd"><span class="sec-num">04</span><span class="sec-ttl">TabPFN com Optuna · Blind Test Isolado</span><span class="sec-pill">metricas_blindtest.xlsx</span></div>
+    <div class="stat-grid">
+      <div class="stat-card b"><div class="sc-lbl">ROC-AUC Blind</div><div class="sc-val b">69.2%</div><div class="sc-sub">melhor configuração</div></div>
+      <div class="stat-card v"><div class="sc-lbl">Balanced Accuracy</div><div class="sc-val v">64.4%</div><div class="sc-sub">threshold 0.415</div></div>
+      <div class="stat-card g"><div class="sc-lbl">Sensibilidade</div><div class="sc-val g">70.0%</div><div class="sc-sub">recall da classe positiva</div></div>
+      <div class="stat-card c"><div class="sc-lbl">Especificidade</div><div class="sc-val c">58.9%</div><div class="sc-sub">controle de falso positivo</div></div>
+    </div>
+  </section>
+
+  <section class="sec">
+    <div class="sec-hd"><span class="sec-num">05</span><span class="sec-ttl">Metodologias Avaliadas</span><span class="sec-pill">18 combinações</span></div>
+    <div class="met-grid">
+      <div class="met-card"><span class="met-tag t-eff">EfficientNet-B0</span><div class="met-name">EfficientNet-B0 + TabPFN 027</div><div class="met-visual">trofectoderme + mci + blastocele</div></div>
+      <div class="met-card"><span class="met-tag t-ens">Ensemble 3 RNCs</span><div class="met-name">Ensemble 3 RNCs + TabPFN 027</div><div class="met-visual">trofectoderme + mci + blastocele</div></div>
+      <div class="met-card"><span class="met-tag t-res">ResNet50</span><div class="met-name">ResNet50 + TabPFN 027</div><div class="met-visual">trofectoderme + mci + blastocele</div></div>
+      <div class="met-card"><span class="met-tag t-xce">Xception</span><div class="met-name">Xception + TabPFN 027</div><div class="met-visual">trofectoderme + mci + blastocele</div></div>
+      <div class="met-card"><span class="met-tag t-eff">EfficientNet-B0</span><div class="met-name">EfficientNet-B0 + TabPFN 027</div><div class="met-visual">blastocele</div></div>
+      <div class="met-card"><span class="met-tag t-ens">Ensemble 3 RNCs</span><div class="met-name">Ensemble 3 RNCs + TabPFN 027</div><div class="met-visual">blastocele</div></div>
+      <div class="met-card"><span class="met-tag t-res">ResNet50</span><div class="met-name">ResNet50 + TabPFN 027</div><div class="met-visual">blastocele</div></div>
+      <div class="met-card"><span class="met-tag t-xce">Xception</span><div class="met-name">Xception + TabPFN 027</div><div class="met-visual">blastocele</div></div>
+      <div class="met-card"><span class="met-tag t-eff">EfficientNet-B0</span><div class="met-name">EfficientNet-B0 + TabPFN 027</div><div class="met-visual">mci</div></div>
+      <div class="met-card"><span class="met-tag t-ens">Ensemble 3 RNCs</span><div class="met-name">Ensemble 3 RNCs + TabPFN 027</div><div class="met-visual">mci</div></div>
+      <div class="met-card"><span class="met-tag t-res">ResNet50</span><div class="met-name">ResNet50 + TabPFN 027</div><div class="met-visual">mci</div></div>
+      <div class="met-card"><span class="met-tag t-xce">Xception</span><div class="met-name">Xception + TabPFN 027</div><div class="met-visual">mci</div></div>
+      <div class="met-card"><span class="met-tag t-eff">EfficientNet-B0</span><div class="met-name">EfficientNet-B0 + TabPFN 027</div><div class="met-visual">trofectoderme</div></div>
+      <div class="met-card"><span class="met-tag t-ens">Ensemble 3 RNCs</span><div class="met-name">Ensemble 3 RNCs + TabPFN 027</div><div class="met-visual">trofectoderme</div></div>
+      <div class="met-card"><span class="met-tag t-res">ResNet50</span><div class="met-name">ResNet50 + TabPFN 027</div><div class="met-visual">trofectoderme</div></div>
+      <div class="met-card"><span class="met-tag t-xce">Xception</span><div class="met-name">Xception + TabPFN 027</div><div class="met-visual">trofectoderme</div></div>
+      <div class="met-card"><span class="met-tag t-eff">EfficientNet-B0</span><div class="met-name">EfficientNet-B0 + TabTransformer</div><div class="met-visual">trofectoderme + mci + blastocele</div></div>
+      <div class="met-card"><span class="met-tag t-ens">Ensemble 3 RNCs</span><div class="met-name">Ensemble 3 RNCs + TabTransformer</div><div class="met-visual">trofectoderme + mci + blastocele</div></div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <span>RNC + TabPFN · Ploidia Embrionária · Dark Blue Tech</span>
+  <span>26 metodologias · Blind test 2026</span>
+</footer>
+
+<script>
+window.addEventListener('load', () => setTimeout(() => { document.getElementById('hc-fill').style.width = '38.8%'; }, 400));
+(function(){
+  const cv=document.getElementById('hero-canvas'),ctx=cv.getContext('2d');
+  let W,H,pts=[];
+  function resize(){W=cv.width=cv.offsetWidth;H=cv.height=cv.offsetHeight;}
+  function mkPt(){const r=Math.random();const color=r>0.5?'#3B82F6':r>0.25?'#06B6D4':'#818CF8';return{x:Math.random()*W,y:Math.random()*H,r:Math.random()*3+1,vx:(Math.random()-.5)*.25,vy:(Math.random()-.5)*.25,alpha:Math.random()*.18+.05,color};}
+  function h2r(h){return`${parseInt(h.slice(1,3),16)},${parseInt(h.slice(3,5),16)},${parseInt(h.slice(5,7),16)}`;}
+  function init(){resize();pts=Array.from({length:65},mkPt);}
+  function frame(){
+    ctx.clearRect(0,0,W,H);
+    for(let i=0;i<pts.length;i++)for(let j=i+1;j<pts.length;j++){const dx=pts[i].x-pts[j].x,dy=pts[i].y-pts[j].y,d=Math.sqrt(dx*dx+dy*dy);if(d<110){ctx.beginPath();ctx.strokeStyle=`rgba(59,130,246,${.12*(1-d/110)})`;ctx.lineWidth=.6;ctx.moveTo(pts[i].x,pts[i].y);ctx.lineTo(pts[j].x,pts[j].y);ctx.stroke();}}
+    pts.forEach(p=>{ctx.beginPath();ctx.arc(p.x,p.y,p.r*3,0,Math.PI*2);ctx.fillStyle=`rgba(${h2r(p.color)},${p.alpha*.1})`;ctx.fill();ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fillStyle=`rgba(${h2r(p.color)},${p.alpha})`;ctx.fill();p.x+=p.vx;p.y+=p.vy;if(p.x<-20)p.x=W+20;if(p.x>W+20)p.x=-20;if(p.y<-20)p.y=H+20;if(p.y>H+20)p.y=-20;});
+    requestAnimationFrame(frame);
+  }
+  window.addEventListener('resize',init);init();frame();
+})();
+(function(){const io=new IntersectionObserver(e=>{e.forEach(x=>{if(x.isIntersecting){x.target.classList.add('show');io.unobserve(x.target);}});},{threshold:0.08});document.querySelectorAll('.sec').forEach(s=>io.observe(s));})();
+</script>
+</body>
+</html>

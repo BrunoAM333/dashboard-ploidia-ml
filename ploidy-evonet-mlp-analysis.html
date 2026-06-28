@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EvoNet · Ploidia — Dark Blue Tech Embrionária</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root {
+  --bg:          #080E1A;
+  --bg-card:     #0D1526;
+  --bg-deep:     #060B14;
+  --bg-lift:     #111E35;
+  --teal:        #3B82F6;
+  --teal-mid:    #60A5FA;
+  --teal-glow:   rgba(59,130,246,0.10);
+  --teal-dim:    rgba(59,130,246,0.07);
+  --teal-border: rgba(59,130,246,0.20);
+  --violet:      #818CF8;
+  --violet-lt:   #6366F1;
+  --violet-dim:  rgba(129,140,248,0.07);
+  --gold:        #F59E0B;
+  --gold-dim:    rgba(245,158,11,0.08);
+  --red:         #DC2626;
+  --red-lt:      #EF4444;
+  --red-dim:     rgba(220,38,38,0.07);
+  --green:       #059669;
+  --text: #E2E8F0;
+  --text-2: #94A3B8;
+  --text-3: #475569;
+  --border: rgba(59,130,246,0.15);
+  --border-sub:  rgba(15,23,42,0.05);
+  --border-teal: rgba(59,130,246,0.20);
+  --r:    10px; --r-lg: 16px; --r-xl: 22px;
+  --fD: 'Space Grotesk', system-ui, sans-serif;
+  --fB: 'Inter', system-ui, sans-serif;
+  --fM: 'JetBrains Mono', 'Fira Mono', monospace;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: #080E1A;
+  background-image:
+    radial-gradient(circle at 20% 20%, rgba(59,130,246,0.04) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(109,40,217,0.03) 0%, transparent 50%);
+  color: var(--text); font-family: var(--fB); font-size: 14px;
+  line-height: 1.65; overflow-x: hidden; -webkit-font-smoothing: antialiased;
+}
+
+/* NAV */
+nav {
+  position: sticky; top: 0; z-index: 200; height: 50px;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 40px;
+  background: rgba(8,14,26,0.96); backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border); box-shadow: 0 1px 20px rgba(0,0,0,0.4);
+}
+.nav-brand {
+  font-family: var(--fM); font-size: 11px; font-weight: 500;
+  letter-spacing: 0.18em; color: var(--blue); text-transform: uppercase;
+  display: flex; align-items: center; gap: 10px;
+}
+.nav-brand::before {
+  content: ''; width: 7px; height: 7px; border-radius: 50%;
+  background: var(--blue); box-shadow: 0 0 8px var(--blue);
+  animation: blink 2.4s ease-in-out infinite;
+}
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+.nav-links { display: flex; gap: 28px; list-style: none; }
+.nav-links a { font-size: 12px; font-weight: 500; letter-spacing: 0.02em; color: var(--text-2); text-decoration: none; transition: color .18s; }
+.nav-links a:hover { color: var(--blue); }
+.nav-chips { display: flex; gap: 8px; flex-wrap: wrap; }
+.nav-chip {
+  font-family: var(--fM); font-size: 10px; letter-spacing: 0.06em;
+  padding: 3px 10px; border-radius: 99px;
+  background: var(--blue-dim); border: 1px solid var(--blue-border); color: var(--blue);
+}
+.nav-chip.violet { background: var(--violet-dim); border-color: rgba(129,140,248,0.22); color: var(--violet-lt); }
+.nav-chip.gold   { background: var(--gold-dim);   border-color: rgba(245,158,11,0.22);  color: var(--gold); }
+
+/* HERO */
+.hero {
+  position: relative; min-height: 400px;
+  display: flex; align-items: center; padding: 80px 40px 64px; overflow: hidden;
+}
+#hero-canvas { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.hero::after {
+  content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 120px;
+  background: linear-gradient(to bottom, transparent, var(--bg)); opacity: 0.6; pointer-events: none;
+}
+.hero-inner {
+  position: relative; z-index: 1; max-width: 1080px; margin: 0 auto; width: 100%;
+  display: grid; grid-template-columns: 1fr 248px; gap: 48px; align-items: center;
+}
+.hero-eyebrow {
+  font-family: var(--fM); font-size: 10px; letter-spacing: 0.2em;
+  color: var(--blue); text-transform: uppercase; margin-bottom: 18px;
+  display: flex; align-items: center; gap: 10px;
+}
+.hero-eyebrow::before { content: ''; display: inline-block; width: 24px; height: 1px; background: var(--blue); }
+h1.hero-title { font-family: var(--fD); font-size: clamp(28px,4vw,44px); font-weight: 700; line-height: 1.12; color: var(--text); margin-bottom: 16px; }
+h1.hero-title em { font-style: normal; background: linear-gradient(135deg, var(--blue) 0%, var(--blue-mid) 60%, var(--violet-lt) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.hero-sub { font-size: 14px; color: var(--text-2); max-width: 500px; line-height: 1.75; }
+.hero-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px; }
+.hero-tag { font-family: var(--fM); font-size: 10px; letter-spacing: 0.06em; padding: 4px 10px; border-radius: 99px; background: var(--blue-dim); border: 1px solid var(--blue-border); color: var(--blue); }
+.hero-tag.violet { background: var(--violet-dim); border-color: rgba(129,140,248,0.22); color: var(--violet-lt); }
+
+.hero-card {
+  background: var(--bg-card); border: 1px solid var(--border-teal);
+  border-radius: var(--r-xl); padding: 28px 28px 24px;
+  position: relative; overflow: hidden;
+  box-shadow: 0 4px 24px rgba(255,255,255,0.06), 0 0 0 1px var(--blue-border);
+}
+.hero-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, var(--blue), var(--violet)); }
+.hero-card::after { content: ''; position: absolute; top: -60px; right: -60px; width: 160px; height: 160px; border-radius: 50%; background: radial-gradient(circle, rgba(59,130,246,0.06) 0%, transparent 70%); pointer-events: none; }
+.hc-label { font-family: var(--fM); font-size: 9px; letter-spacing: 0.16em; color: var(--blue); text-transform: uppercase; margin-bottom: 10px; }
+.hc-auc { font-family: var(--fM); font-size: 52px; font-weight: 500; color: var(--text); line-height: 1; margin-bottom: 3px; }
+.hc-auc span { font-size: 22px; color: var(--blue); }
+.hc-model { font-size: 11px; color: var(--text-2); margin-bottom: 3px; font-weight: 600; }
+.hc-sub   { font-size: 11px; color: var(--text-3); margin-bottom: 22px; }
+.hc-prog-labels { display: flex; justify-content: space-between; font-family: var(--fM); font-size: 9px; color: var(--text-3); margin-bottom: 6px; }
+.hc-track { height: 6px; border-radius: 99px; background: rgba(255,255,255,0.06); position: relative; overflow: visible; }
+.hc-fill { height: 100%; border-radius: 99px; background: linear-gradient(90deg, var(--blue), var(--blue-mid)); width: 0; transition: width 1.4s cubic-bezier(.4,0,.2,1) .4s; position: relative; }
+.hc-fill::after { content: ''; position: absolute; right: 0; top: 50%; transform: translate(50%,-50%); width: 10px; height: 10px; border-radius: 50%; background: var(--blue); box-shadow: 0 0 6px var(--blue); }
+
+/* MAIN */
+.main { max-width: 1080px; margin: 0 auto; padding: 0 40px 100px; }
+
+/* SECTION */
+.sec { margin-bottom: 72px; opacity: 0; transform: translateY(18px); transition: opacity .55s, transform .55s; }
+.sec.show { opacity: 1; transform: none; }
+.sec-hd { display: flex; align-items: baseline; gap: 14px; margin-bottom: 28px; padding-bottom: 14px; border-bottom: 1px solid var(--border); }
+.sec-num { font-family: var(--fM); font-size: 10px; color: var(--blue); opacity:.55; }
+.sec-ttl { font-family: var(--fD); font-size: 19px; font-weight: 600; color: var(--text); }
+.sec-pill { margin-left: auto; font-family: var(--fM); font-size: 10px; padding: 3px 10px; border-radius: 99px; background: var(--blue-dim); color: var(--blue); border: 1px solid var(--blue-border); }
+.sec-desc { font-size: 12.5px; color: var(--text-2); line-height: 1.75; max-width: 760px; margin-bottom: 24px; border-left: 3px solid var(--blue-border); padding-left: 14px; }
+
+/* STAT GRID */
+.stat-grid   { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; margin-bottom: 20px; }
+.stat-grid-5 { display: grid; grid-template-columns: repeat(5,1fr); gap: 12px; margin-bottom: 20px; }
+.stat-card {
+  background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--r);
+  padding: 18px 20px; position: relative; overflow: hidden;
+  transition: border-color .2s, transform .2s, box-shadow .2s;
+}
+.stat-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; }
+.stat-card.t::before  { background: var(--blue); }
+.stat-card.m::before  { background: var(--blue-mid); }
+.stat-card.v::before  { background: var(--violet); }
+.stat-card.g::before  { background: var(--gold); }
+.stat-card.r::before  { background: var(--red); }
+.stat-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.4); transform: translateY(-2px); }
+.sc-lbl { font-family: var(--fM); font-size: 9px; letter-spacing: .12em; text-transform: uppercase; color: var(--text-2); margin-bottom: 8px; }
+.sc-val { font-family: var(--fD); font-size: 26px; font-weight: 700; line-height: 1; margin-bottom: 4px; }
+.sc-val.teal   { color: var(--blue); }
+.sc-val.mid    { color: var(--blue-mid); }
+.sc-val.violet { color: var(--violet); }
+.sc-val.gold   { color: var(--gold); }
+.sc-sub { font-size: 11px; color: var(--text-3); }
+
+/* TABLES */
+.tbl-wrap { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--r-lg); overflow: hidden; }
+table.results { width: 100%; border-collapse: collapse; font-size: 12px; }
+table.results thead th { font-family: var(--fM); font-size: 9px; letter-spacing: .1em; text-transform: uppercase; color: var(--text-2); text-align: left; padding: 11px 16px; border-bottom: 1px solid var(--border); background: var(--bg-deep); }
+table.results tbody tr { border-bottom: 1px solid rgba(59,130,246,0.07); transition: background .15s; }
+table.results tbody tr:hover { background: rgba(59,130,246,0.04); }
+table.results tbody tr.champ-row { background: rgba(59,130,246,0.06); }
+table.results tbody tr:last-child { border-bottom: none; }
+table.results td { padding: 11px 16px; color: var(--text); }
+.td-rank { font-family: var(--fM); font-size: 11px; color: var(--blue); width: 32px; }
+.td-model strong { display: block; font-size: 12px; font-weight: 600; color: var(--text); margin-bottom: 2px; }
+.td-model small  { font-family: var(--fM); font-size: 10px; color: var(--text-3); }
+.td-num { font-family: var(--fM); font-size: 11px; font-weight: 500; color: var(--text); white-space: nowrap; }
+.td-num.hi { color: var(--blue); }
+.badge-champ { display: inline-flex; align-items: center; gap: 4px; font-family: var(--fM); font-size: 9px; color: var(--blue); background: var(--blue-dim); border: 1px solid rgba(59,130,246,0.2); border-radius: 99px; padding: 2px 8px; margin-left: 8px; vertical-align: middle; }
+.mini-bar { height: 5px; border-radius: 99px; background: rgba(59,130,246,0.10); min-width: 70px; overflow: hidden; }
+.mini-bar-fill { height: 100%; border-radius: 99px; background: linear-gradient(90deg, var(--blue), var(--blue-mid)); }
+
+/* CALLOUT + INSIGHT */
+.insight-grid { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 18px; }
+.callout-card { background: var(--bg-card); border: 1px solid var(--border-teal); border-radius: var(--r-lg); padding: 28px; position: relative; overflow: hidden; }
+.callout-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, var(--blue), var(--blue-mid)); }
+.callout-card h3 { font-family: var(--fD); font-size: 16px; font-weight: 600; color: var(--text); margin-bottom: 14px; }
+.callout-card p  { font-size: 13px; color: var(--text-2); line-height: 1.75; margin-bottom: 10px; }
+.callout-card p:last-child { margin-bottom: 0; }
+.callout-card strong { color: var(--text); font-weight: 600; }
+.val-table { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--r-lg); overflow: hidden; }
+
+/* CHART PANEL */
+.chart-panel { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--r-lg); padding: 22px 20px 16px; }
+.chart-title { font-family: var(--fD); font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 16px; }
+.chart-wrap { position: relative; min-height: 280px; }
+
+/* MET GRID */
+.met-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; }
+.met-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--r); padding: 16px 18px; transition: box-shadow .2s, transform .2s; }
+.met-card:hover { box-shadow: 0 4px 16px rgba(255,255,255,0.06); transform: translateY(-2px); }
+.met-tag { display: inline-block; font-family: var(--fM); font-size: 9px; font-weight: 500; padding: 3px 9px; border-radius: 5px; margin-bottom: 10px; }
+.t-mlp { background:rgba(96,165,250,.15); color:var(--blue-mid); }
+.met-name   { font-family: var(--fD); font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 3px; }
+.met-visual { font-family: var(--fM); font-size: 10px; color: var(--text-3); margin-bottom: 2px; }
+.met-tabular{ font-family: var(--fM); font-size: 10px; color: var(--text-2); }
+
+/* INFO TABLE */
+.info-section { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--r-lg); padding: 22px 24px; margin-bottom: 16px; }
+.info-section h2 { font-family: var(--fD); font-size: 15px; font-weight: 600; color: var(--text); margin-bottom: 14px; padding-bottom: 10px; border-bottom: 1px solid var(--border); }
+.info-row { display: flex; align-items: flex-start; gap: 12px; padding: 9px 0; border-bottom: 1px solid rgba(59,130,246,0.07); font-size: 13px; }
+.info-row:last-child { border-bottom: none; }
+.info-key { font-weight: 600; color: var(--text-2); min-width: 220px; flex-shrink: 0; }
+.info-val { color: var(--text); }
+
+/* FOOTER */
+footer { max-width: 1080px; margin: 0 auto; padding: 24px 40px 40px; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; font-family: var(--fM); font-size: 10px; color: var(--text-3); letter-spacing: .04em; }
+
+/* RESPONSIVE */
+@media(max-width:860px) {
+  .hero-inner { grid-template-columns: 1fr; }
+  .stat-grid, .stat-grid-5 { grid-template-columns: repeat(2,1fr); }
+  .insight-grid, .met-grid { grid-template-columns: 1fr; }
+  nav { padding: 0 20px; }
+  .nav-links { display: none; }
+  .main, .hero { padding-left: 20px; padding-right: 20px; }
+  footer { flex-direction: column; gap: 8px; text-align: center; }
+}
+@media(max-width:520px) {
+  .stat-grid, .stat-grid-5 { grid-template-columns: 1fr; }
+  .met-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-brand">EvoNet · Ploidia — Dark Blue Tech</div>
+  <ul class="nav-links">
+    <li><a href="#visao-geral">Visão Geral</a></li>
+    <li><a href="#ranking">Ranking</a></li>
+    <li><a href="#analise">Análise</a></li>
+    <li><a href="#info">Informações</a></li>
+  </ul>
+  <div class="nav-chips">
+    <span class="nav-chip">27.427 redes MLP</span>
+    <span class="nav-chip">Blind test · n=1020</span>
+    <span class="nav-chip violet">56 variáveis</span>
+  </div>
+</nav>
+
+<header class="hero">
+  <canvas id="hero-canvas"></canvas>
+  <div class="hero-inner">
+    <div>
+      <div class="hero-eyebrow">Research Dashboard · Redes MLP</div>
+      <h1 class="hero-title">EvoNet: <em>27.427 redes</em><br>para predição de ploidia</h1>
+      <p class="hero-sub">Exploração sistemática do espaço de arquiteturas MLP para classificação binária euploide/aneuploide. Variáveis morfológicas, morfocinéticas e dados clínicos — sem imagens.</p>
+      <div class="hero-tags">
+        <span class="hero-tag">MLP — Multilayer Perceptron</span>
+        <span class="hero-tag">56 variáveis de entrada</span>
+        <span class="hero-tag violet">7.889 treino · 1.020 blind test</span>
+      </div>
+    </div>
+    <aside class="hero-card">
+      <div class="hc-label">Melhor acurácia · Blind Test</div>
+      <div class="hc-auc">66.2<span>%</span></div>
+      <div class="hc-model">rede_2026-06-12_19-21-18</div>
+      <div class="hc-sub">score F1 · tabular puro</div>
+      <div class="hc-prog-labels"><span>50%</span><span>→ Meta 75%</span><span>100%</span></div>
+      <div class="hc-track"><div class="hc-fill" id="hc-fill"></div></div>
+    </aside>
+  </div>
+</header>
+
+<main class="main">
+
+  <!-- VISÃO GERAL -->
+  <section class="sec" id="visao-geral">
+    <div class="sec-hd">
+      <span class="sec-num">01</span>
+      <span class="sec-ttl">Visão Geral</span>
+      <span class="sec-pill">5 indicadores-chave</span>
+    </div>
+    <div class="stat-grid-5">
+      <div class="stat-card t">
+        <div class="sc-lbl">Redes Criadas</div>
+        <div class="sc-val teal">27.427</div>
+        <div class="sc-sub">busca configuracional total</div>
+      </div>
+      <div class="stat-card m">
+        <div class="sc-lbl">Melhor Acurácia Blind</div>
+        <div class="sc-val mid">66.18%</div>
+        <div class="sc-sub">rede_2026-06-12_19-21-18</div>
+      </div>
+      <div class="stat-card">
+        <div class="sc-lbl">Média Acurácia Teste</div>
+        <div class="sc-val" style="color:var(--text)">61.42%</div>
+        <div class="sc-sub">média das 17 melhores</div>
+      </div>
+      <div class="stat-card v">
+        <div class="sc-lbl">Média Acurácia Blind</div>
+        <div class="sc-val violet">63.97%</div>
+        <div class="sc-sub">boa generalização</div>
+      </div>
+      <div class="stat-card g">
+        <div class="sc-lbl">Variáveis de Entrada</div>
+        <div class="sc-val gold">56</div>
+        <div class="sc-sub">morfo + morfocinética + clínico</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- RANKING TOP 10 -->
+  <section class="sec" id="ranking">
+    <div class="sec-hd">
+      <span class="sec-num">02</span>
+      <span class="sec-ttl">Ranking Top 10 — Acurácia Blind Test</span>
+      <span class="sec-pill">Ordenadas por blind test</span>
+    </div>
+    <p class="sec-desc">Redes ordenadas pelo desempenho no blind test — o critério de maior relevância clínica. A coluna Δ revela a diferença entre blind e teste: valores positivos indicam melhor generalização do que o esperado.</p>
+    <div class="tbl-wrap">
+      <table class="results">
+        <thead>
+          <tr><th>#</th><th>Nome da Rede</th><th>Score</th><th>Acurácia Teste</th><th>Acurácia Blind</th><th>Δ (Blind − Teste)</th><th>F1 C1 Teste</th><th>F1 C2 Teste</th><th>Força</th></tr>
+        </thead>
+        <tbody id="top10-body"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ANÁLISE -->
+  <section class="sec" id="analise">
+    <div class="sec-hd">
+      <span class="sec-num">03</span>
+      <span class="sec-ttl">Análise: Teste vs. Blind Test</span>
+    </div>
+    <div class="insight-grid">
+      <div class="callout-card">
+        <h3>Leitura principal — EvoNet MLP</h3>
+        <p>A melhor rede (<strong>rede_2026-06-12_19-21-18</strong>) atingiu <strong>66.18%</strong> de acurácia no blind test com apenas 61.28% no conjunto de teste — um salto positivo de <strong>+4.9 pontos percentuais</strong>, indicando que o conjunto de treinamento é relativamente mais difícil.</p>
+        <p>A média das 17 melhores redes foi <strong>63.97%</strong> no blind test vs. 61.42% no teste, demonstrando que as redes MLP generalizam consistentemente para dados novos sem overfitting.</p>
+        <p>Com <strong>56 variáveis tabulares</strong> e sem nenhuma imagem, o EvoNet estabelece um baseline sólido: os dados clínico-morfocinéticos carregam sinal discriminativo real para predição de ploidia.</p>
+      </div>
+      <div class="val-table">
+        <table class="results">
+          <thead><tr><th>#</th><th>Rede</th><th>Teste</th><th>Blind</th><th>Δ pp</th></tr></thead>
+          <tbody id="delta-body"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- DISTRIBUIÇÃO GRÁFICO -->
+  <section class="sec">
+    <div class="sec-hd">
+      <span class="sec-num">04</span>
+      <span class="sec-ttl">Distribuição de Acurácia — Todas as Redes</span>
+    </div>
+    <p class="sec-desc">Curva ordenada por acurácia blind test das 17 redes representativas. Mostra a distribuição geral de desempenho e a dispersão entre teste e blind test.</p>
+    <div class="chart-panel">
+      <div class="chart-title">Acurácia Teste vs. Blind Test (17 redes ordenadas por Blind)</div>
+      <div class="chart-wrap"><canvas id="dist-chart"></canvas></div>
+    </div>
+  </section>
+
+  <!-- INFORMAÇÕES -->
+  <section class="sec" id="info">
+    <div class="sec-hd">
+      <span class="sec-num">05</span>
+      <span class="sec-ttl">Informações do Projeto e Banco de Dados</span>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+      <div class="info-section">
+        <h2>Banco de Dados</h2>
+        <div class="info-row"><span class="info-key">Amostras de Treinamento</span><span class="info-val"><strong>7.889</strong></span></div>
+        <div class="info-row"><span class="info-key">Amostras de Blind Test</span><span class="info-val"><strong>1.020</strong></span></div>
+        <div class="info-row"><span class="info-key">Variáveis de Entrada</span><span class="info-val"><strong>56</strong></span></div>
+        <div class="info-row"><span class="info-key">Tipo de Problema</span><span class="info-val">Classificação Binária (euploide / aneuploide)</span></div>
+        <div class="info-row"><span class="info-key">Tipo de Rede</span><span class="info-val">MLP — Multilayer Perceptron</span></div>
+        <div class="info-row"><span class="info-key">Redes exploradas</span><span class="info-val"><strong>27.427</strong> configurações</span></div>
+      </div>
+      <div class="info-section">
+        <h2>Origem das Variáveis</h2>
+        <div class="info-row"><span class="info-key">Variáveis Morfológicas</span><span class="info-val">Características de forma e estrutura de imagens</span></div>
+        <div class="info-row"><span class="info-key">Variáveis Morfocinéticas</span><span class="info-val">Dinâmica e movimento das estruturas</span></div>
+        <div class="info-row"><span class="info-key">Dados Clínicos</span><span class="info-val">Informações clínicas da paciente</span></div>
+        <div class="info-row"><span class="info-key">Métricas Avaliadas</span><span class="info-val">Acurácia, Recall, Precision, Specificity, F1-Score</span></div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <span>EvoNet · Ploidia — Dark Blue Tech Embrionária · Classificação MLP</span>
+  <span>27.427 redes avaliadas · 2026</span>
+</footer>
+
+<script>
+const EVO_DATA = [
+  {nome:"rede_2026-06-12_19-21-18",score:"F1",      teste:61.28,blind:66.18,f1c1t:60.96,f1c2t:61.59},
+  {nome:"rede_2026-06-12_19-19-52",score:"F1",      teste:60.91,blind:65.10,f1c1t:61.02,f1c2t:60.81},
+  {nome:"rede_2026-06-12_20-43-46",score:"Recall",  teste:61.74,blind:64.80,f1c1t:61.38,f1c2t:62.08},
+  {nome:"rede_2026-06-13_07-47-37",score:"F1",      teste:62.65,blind:64.22,f1c1t:62.16,f1c2t:63.12},
+  {nome:"rede_2026-06-13_17-16-59",score:"Recall",  teste:61.92,blind:64.12,f1c1t:61.85,f1c2t:61.99},
+  {nome:"rede_2026-06-17_10-59-52",score:"Recall",  teste:60.82,blind:64.12,f1c1t:60.31,f1c2t:61.32},
+  {nome:"rede_2026-06-12_19-17-25",score:"F1",      teste:61.00,blind:64.12,f1c1t:60.57,f1c2t:61.43},
+  {nome:"rede_2026-06-13_07-41-13",score:"F1",      teste:62.47,blind:64.02,f1c1t:61.62,f1c2t:63.27},
+  {nome:"rede_2026-06-17_02-18-56",score:"Recall",  teste:60.91,blind:64.02,f1c1t:60.37,f1c2t:61.44},
+  {nome:"rede_2026-06-14_04-58-57",score:"Specificity",teste:61.37,blind:63.73,f1c1t:60.80,f1c2t:61.93},
+  {nome:"rede_2026-06-21_12-35-28",score:"Specificity",teste:61.83,blind:63.53,f1c1t:61.15,f1c2t:62.48},
+  {nome:"rede_2026-06-17_00-58-10",score:"Specificity",teste:61.55,blind:63.24,f1c1t:60.25,f1c2t:62.78},
+  {nome:"rede_2026-06-24_10-00-49",score:"Precision",  teste:61.55,blind:63.43,f1c1t:61.55,f1c2t:61.55},
+  {nome:"rede_2026-06-14_09-10-00",score:"Precision",  teste:60.46,blind:63.63,f1c1t:60.09,f1c2t:60.81},
+  {nome:"rede_2026-06-14_04-54-36",score:"Specificity",teste:61.00,blind:62.94,f1c1t:60.43,f1c2t:61.57},
+  {nome:"rede_2026-06-16_18-22-02",score:"Precision",  teste:61.55,blind:63.33,f1c1t:60.98,f1c2t:62.11},
+  {nome:"rede_2026-06-16_18-22-35",score:"Precision",  teste:61.19,blind:62.94,f1c1t:60.68,f1c2t:61.68},
+];
+
+const sorted = [...EVO_DATA].sort((a,b) => b.blind - a.blind);
+const pct = v => v.toFixed(2) + '%';
+const delta = r => (r.blind - r.teste).toFixed(2);
+const deltaClass = r => (r.blind - r.teste) >= 0 ? 'style="color:var(--blue);font-weight:700"' : 'style="color:var(--red-lt);font-weight:700"';
+const deltaSign = r => (r.blind - r.teste) >= 0 ? '+' : '';
+
+// Top 10 table
+document.getElementById('top10-body').innerHTML = sorted.slice(0,10).map((r,i) => `
+  <tr class="${i===0?'champ-row':''}">
+    <td class="td-rank">${i+1}</td>
+    <td class="td-model">
+      <strong>${r.nome}${i===0?' <span class="badge-champ">★ MELHOR</span>':''}</strong>
+      <small>score otimizado: ${r.score}</small>
+    </td>
+    <td class="td-num">${r.score}</td>
+    <td class="td-num">${pct(r.teste)}</td>
+    <td class="td-num hi">${pct(r.blind)}</td>
+    <td class="td-num" ${deltaClass(r)}>${deltaSign(r)}${delta(r)} pp</td>
+    <td class="td-num">${pct(r.f1c1t)}</td>
+    <td class="td-num">${pct(r.f1c2t)}</td>
+    <td><div class="mini-bar"><div class="mini-bar-fill" style="width:${r.blind}%"></div></div></td>
+  </tr>
+`).join('');
+
+// Delta table (insight)
+document.getElementById('delta-body').innerHTML = sorted.slice(0,8).map((r,i) => {
+  const d = r.blind - r.teste;
+  const cls = d >= 0 ? 'style="color:var(--blue);font-weight:700;font-family:var(--fM)"' : 'style="color:var(--red-lt);font-weight:700;font-family:var(--fM)"';
+  return `<tr class="${i===0?'champ-row':''}">
+    <td class="td-rank">${i+1}</td>
+    <td class="td-model"><strong>${r.nome.replace('rede_','')}</strong></td>
+    <td class="td-num">${pct(r.teste)}</td>
+    <td class="td-num hi">${pct(r.blind)}</td>
+    <td ${cls}>${d>=0?'+':''}${d.toFixed(2)}pp</td>
+  </tr>`;
+}).join('');
+
+// Distribution chart
+const sortedForChart = [...EVO_DATA].sort((a,b) => a.blind - b.blind);
+new Chart(document.getElementById('dist-chart').getContext('2d'), {
+  type: 'line',
+  data: {
+    labels: sortedForChart.map(r => r.nome.replace('rede_','')),
+    datasets: [
+      { label: 'Acurácia Teste', data: sortedForChart.map(r => r.teste/100), borderColor: '#60A5FA', backgroundColor: 'rgba(96,165,250,0.08)', tension: 0.3, pointRadius: 3, fill: true, borderWidth: 2 },
+      { label: 'Acurácia Blind', data: sortedForChart.map(r => r.blind/100), borderColor: '#3B82F6', backgroundColor: 'rgba(59,130,246,0.08)', tension: 0.3, pointRadius: 3, fill: false, borderWidth: 2.5 },
+    ]
+  },
+  options: {
+    responsive: true,
+    plugins: {
+      legend: { position: 'bottom', labels: { font: { family: 'JetBrains Mono' }, boxWidth: 12 } },
+      tooltip: { callbacks: { label: c => c.dataset.label + ': ' + (c.raw*100).toFixed(2) + '%' } }
+    },
+    scales: {
+      y: { min: 0.55, max: 0.72, ticks: { callback: v => (v*100).toFixed(0)+'%', font: { family: 'JetBrains Mono', size: 10 } }, grid: { color: 'rgba(15,23,42,0.05)' } },
+      x: { display: false }
+    }
+  }
+});
+
+/* hero progress bar: 66.18% mapped from [50,100] → (66.18-50)/50 = 32.4% */
+window.addEventListener('load', () => { setTimeout(()=>{ document.getElementById('hc-fill').style.width='32.4%'; }, 400); });
+
+/* hero canvas */
+(function(){
+  const cv=document.getElementById('hero-canvas'), ctx=cv.getContext('2d');
+  let W,H,pts=[];
+  function resize(){W=cv.width=cv.offsetWidth;H=cv.height=cv.offsetHeight;}
+  function mkPt(){const roll=Math.random();const color=roll>0.55?'#3B82F6':roll>0.3?'#818CF8':'#F59E0B';return{x:Math.random()*W,y:Math.random()*H,r:Math.random()*3.5+1.2,vx:(Math.random()-.5)*.28,vy:(Math.random()-.5)*.28,alpha:Math.random()*.20+.06,color};}
+  function hex2rgb(h){return`${parseInt(h.slice(1,3),16)},${parseInt(h.slice(3,5),16)},${parseInt(h.slice(5,7),16)}`;}
+  function init(){resize();pts=Array.from({length:65},mkPt);}
+  function frame(){
+    ctx.clearRect(0,0,W,H);
+    for(let i=0;i<pts.length;i++)for(let j=i+1;j<pts.length;j++){const dx=pts[i].x-pts[j].x,dy=pts[i].y-pts[j].y,d=Math.sqrt(dx*dx+dy*dy);if(d<110){ctx.beginPath();ctx.strokeStyle=`rgba(59,130,246,${.10*(1-d/110)})`;ctx.lineWidth=.5;ctx.moveTo(pts[i].x,pts[i].y);ctx.lineTo(pts[j].x,pts[j].y);ctx.stroke();}}
+    pts.forEach(p=>{ctx.beginPath();ctx.arc(p.x,p.y,p.r*3,0,Math.PI*2);ctx.fillStyle=`rgba(${hex2rgb(p.color)},${p.alpha*.12})`;ctx.fill();ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fillStyle=`rgba(${hex2rgb(p.color)},${p.alpha})`;ctx.fill();p.x+=p.vx;p.y+=p.vy;if(p.x<-20)p.x=W+20;if(p.x>W+20)p.x=-20;if(p.y<-20)p.y=H+20;if(p.y>H+20)p.y=-20;});
+    requestAnimationFrame(frame);
+  }
+  window.addEventListener('resize',init);init();frame();
+})();
+
+/* intersection observer */
+(function(){const io=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('show');io.unobserve(e.target);}});},{threshold:0.08});document.querySelectorAll('.sec').forEach(s=>io.observe(s));})();
+</script>
+</body>
+</html>

@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Comparativo de Ensembles · Ploidia</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:          #080E1A;
+  --bg-card:     #0D1526;
+  --bg-deep:     #060B14;
+  --bg-lift:     #111E35;
+  --blue:        #3B82F6;
+  --blue-mid:    #60A5FA;
+  --blue-glow:   rgba(59,130,246,0.10);
+  --blue-dim:    rgba(59,130,246,0.10);
+  --blue-border: rgba(59,130,246,0.28);
+  --violet:      #818CF8;
+  --violet-lt:   #6366F1;
+  --violet-dim:  rgba(129,140,248,0.07);
+  --gold:        #F59E0B;
+  --gold-dim:    rgba(245,158,11,0.08);
+  --red:         #DC2626;
+  --red-lt:      #EF4444;
+  --red-dim:     rgba(220,38,38,0.07);
+  --green:       #059669;
+  --text:        #E2E8F0;
+  --text-2:      #94A3B8;
+  --text-3:      #475569;
+  --border:      rgba(59,130,246,0.15);
+  --border-sub:  rgba(59,130,246,0.08);
+  --border-teal: rgba(59,130,246,0.28);
+  --r: 10px; --r-lg: 16px; --r-xl: 22px;
+  --fD: 'Space Grotesk', system-ui, sans-serif;
+  --fB: 'Inter', system-ui, sans-serif;
+  --fM: 'JetBrains Mono', 'Fira Mono', monospace;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: #080E1A;
+  background-image:
+    radial-gradient(circle at 20% 20%, rgba(59,130,246,0.04) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(109,40,217,0.03) 0%, transparent 50%);
+  color: var(--text); font-family: var(--fB); font-size: 14px;
+  line-height: 1.65; overflow-x: hidden; -webkit-font-smoothing: antialiased;
+}
+
+/* NAV */
+nav { position: sticky; top: 0; z-index: 200; height: 50px; display: flex; align-items: center; justify-content: space-between; padding: 0 40px; background: rgba(8,14,26,0.96); backdrop-filter: blur(16px); border-bottom: 1px solid var(--border); box-shadow: 0 1px 8px rgba(0,0,0,0.06); }
+.nav-brand { font-family: var(--fM); font-size: 11px; font-weight: 500; letter-spacing: 0.18em; color: var(--blue); text-transform: uppercase; display: flex; align-items: center; gap: 10px; }
+.nav-brand::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: var(--blue); box-shadow: 0 0 8px var(--blue); animation: blink 2.4s ease-in-out infinite; }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+.nav-chips { display: flex; gap: 8px; flex-wrap: wrap; }
+.nav-chip { font-family: var(--fM); font-size: 10px; letter-spacing: 0.06em; padding: 3px 10px; border-radius: 99px; background: var(--blue-dim); border: 1px solid var(--blue-border); color: var(--blue); }
+.nav-chip.violet { background: var(--violet-dim); border-color: rgba(129,140,248,0.22); color: var(--violet-lt); }
+
+/* HERO */
+.hero { position: relative; min-height: 340px; display: flex; align-items: center; padding: 64px 40px 52px; overflow: hidden; }
+.hero::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 100px; background: linear-gradient(to bottom, transparent, var(--bg)); opacity: 0.7; pointer-events: none; }
+.hero-inner { position: relative; z-index: 1; max-width: 1080px; margin: 0 auto; width: 100%; display: grid; grid-template-columns: 1fr 260px; gap: 48px; align-items: center; }
+.hero-eyebrow { font-family: var(--fM); font-size: 10px; letter-spacing: 0.2em; color: var(--blue); text-transform: uppercase; margin-bottom: 16px; display: flex; align-items: center; gap: 10px; }
+.hero-eyebrow::before { content: ''; display: inline-block; width: 24px; height: 1px; background: var(--blue); }
+h1.hero-title { font-family: var(--fD); font-size: clamp(28px,4vw,44px); font-weight: 700; line-height: 1.12; color: var(--text); margin-bottom: 14px; }
+h1.hero-title em { font-style: normal; background: linear-gradient(135deg, var(--blue) 0%, var(--blue-mid) 60%, var(--violet-lt) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.hero-sub { font-size: 13.5px; color: var(--text-2); max-width: 480px; line-height: 1.75; }
+.hero-card { background: var(--bg-card); border: 1px solid var(--border-teal); border-radius: var(--r-xl); padding: 26px 26px 22px; position: relative; overflow: hidden; box-shadow: 0 4px 24px rgba(255,255,255,0.06), 0 0 0 1px var(--blue-border); }
+.hero-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, var(--blue), var(--violet)); }
+.hero-card::after { content: ''; position: absolute; top: -60px; right: -60px; width: 160px; height: 160px; border-radius: 50%; background: radial-gradient(circle, rgba(59,130,246,0.06) 0%, transparent 70%); pointer-events: none; }
+.hc-label { font-family: var(--fM); font-size: 9px; letter-spacing: 0.16em; color: var(--blue); text-transform: uppercase; margin-bottom: 8px; }
+#hero-verdict { font-family: var(--fD); font-size: 15px; font-weight: 600; color: var(--text); line-height: 1.4; margin-bottom: 12px; }
+.hc-detail { font-size: 12px; color: var(--text-2); line-height: 1.65; margin-bottom: 6px; }
+.hc-mono { font-family: var(--fM); font-size: 11px; color: var(--text-3); margin-top: 10px; }
+
+/* MAIN */
+.main { max-width: 1080px; margin: 0 auto; padding: 0 40px 100px; }
+
+/* SECTION */
+.sec { margin-bottom: 64px; opacity: 0; transform: translateY(18px); transition: opacity .55s, transform .55s; }
+.sec.show { opacity: 1; transform: none; }
+.sec-hd { display: flex; align-items: baseline; gap: 14px; margin-bottom: 24px; padding-bottom: 14px; border-bottom: 1px solid var(--border); }
+.sec-num { font-family: var(--fM); font-size: 10px; color: var(--blue); opacity:.55; }
+.sec-ttl { font-family: var(--fD); font-size: 18px; font-weight: 600; color: var(--text); }
+.sec-desc { font-size: 12.5px; color: var(--text-2); line-height: 1.75; max-width: 760px; margin-bottom: 20px; border-left: 3px solid var(--blue-border); padding-left: 14px; }
+
+/* KPI GRID */
+.kpi-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; margin-bottom: 8px; }
+.kpi-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--r); padding: 18px 20px; transition: border-color .2s, transform .2s; position: relative; overflow: hidden; }
+.kpi-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; }
+.kpi-card:nth-child(1)::before { background: var(--blue); }
+.kpi-card:nth-child(2)::before { background: var(--blue-mid); }
+.kpi-card:nth-child(3)::before { background: var(--violet); }
+.kpi-card:nth-child(4)::before { background: var(--violet-lt); }
+.kpi-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.4); transform: translateY(-2px); }
+.kpi-lbl { font-family: var(--fM); font-size: 9px; letter-spacing: .12em; text-transform: uppercase; color: var(--text-2); margin-bottom: 8px; }
+.kpi-val { font-family: var(--fD); font-size: 28px; font-weight: 700; line-height: 1; margin-bottom: 4px; color: var(--text); }
+.kpi-note { font-size: 11px; color: var(--text-3); }
+
+/* TABLES */
+.tbl-wrap { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--r-lg); overflow: hidden; }
+table.results { width: 100%; border-collapse: collapse; font-size: 12px; }
+table.results thead th { font-family: var(--fM); font-size: 9px; letter-spacing: .1em; text-transform: uppercase; color: var(--text-2); text-align: left; padding: 11px 16px; border-bottom: 1px solid var(--border); background: var(--bg-deep); }
+table.results tbody tr { border-bottom: 1px solid rgba(59,130,246,0.07); transition: background .15s; }
+table.results tbody tr:hover { background: rgba(59,130,246,0.04); }
+table.results tbody tr:last-child { border-bottom: none; }
+table.results td { padding: 10px 16px; font-family: var(--fM); font-size: 11px; color: var(--text); }
+td.num { text-align: right; font-variant-numeric: tabular-nums; }
+.delta-pos { color: var(--blue); font-weight: 700; }
+.delta-neg { color: var(--red-lt); font-weight: 700; }
+.tag-ensemble { display: inline-flex; align-items: center; font-size: 9px; color: var(--blue); background: var(--blue-dim); border: 1px solid rgba(59,130,246,0.28); border-radius: 99px; padding: 2px 8px; font-family: var(--fM); }
+.tag-model    { display: inline-flex; align-items: center; font-size: 9px; color: var(--violet-lt); background: var(--violet-dim); border: 1px solid rgba(129,140,248,0.2); border-radius: 99px; padding: 2px 8px; font-family: var(--fM); }
+
+/* TWO COL */
+.two-col { display: grid; grid-template-columns: repeat(2,1fr); gap: 16px; }
+
+/* CHART PANEL */
+.chart-panel { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--r-lg); padding: 22px 20px 16px; }
+.chart-title { font-family: var(--fD); font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 14px; }
+.small-note { font-family: var(--fM); font-size: 10px; color: var(--text-3); margin-top: 10px; letter-spacing: .03em; }
+svg { width: 100%; height: auto; display: block; }
+
+/* MATRIX */
+.matrix-grid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 12px; }
+.matrix-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--r); padding: 14px; }
+.matrix-title { font-family: var(--fM); font-size: 10px; font-weight: 500; color: var(--text-2); margin-bottom: 10px; min-height: 30px; }
+.matrix { display: grid; grid-template-columns: repeat(2,1fr); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+.cell { min-height: 54px; display: grid; place-items: center; font-weight: 700; color: #fff; border-right: 1px solid rgba(255,255,255,.5); border-bottom: 1px solid rgba(255,255,255,.5); font-family: var(--fM); font-size: 16px; }
+.axis-labels { color: var(--text-3); font-family: var(--fM); font-size: 10px; display: flex; justify-content: space-between; margin-top: 8px; }
+
+/* TABS */
+.family-tabs { display: inline-flex; border: 1px solid var(--border); border-radius: var(--r); overflow: hidden; background: var(--bg-card); margin-left: auto; }
+.tab-button { border: 0; background: transparent; padding: 7px 16px; cursor: pointer; font-family: var(--fM); font-size: 10px; font-weight: 500; letter-spacing: .06em; text-transform: uppercase; color: var(--text-3); transition: background .15s, color .15s; }
+.tab-button.active { background: var(--blue); color: #fff; }
+
+/* CALLOUT */
+.insight-grid { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 18px; }
+.callout-card { background: var(--bg-card); border: 1px solid var(--border-teal); border-radius: var(--r-lg); padding: 28px; position: relative; overflow: hidden; }
+.callout-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, var(--blue), var(--blue-mid)); }
+.callout-card h3 { font-family: var(--fD); font-size: 16px; font-weight: 600; color: var(--text); margin-bottom: 14px; }
+.callout-card p  { font-size: 13px; color: var(--text-2); line-height: 1.75; margin-bottom: 10px; }
+.callout-card p:last-child { margin-bottom: 0; }
+.callout-card strong { color: var(--text); font-weight: 600; }
+.val-table { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--r-lg); overflow: hidden; }
+
+/* DELTA SUMMARY BAND */
+.delta-band { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--r-lg); padding: 20px 24px; }
+.delta-band h3 { font-family: var(--fD); font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: 16px; }
+.delta-row { display: grid; grid-template-columns: 1.4fr 1fr 0.8fr 0.8fr 0.8fr 0.8fr 0.8fr; align-items: center; gap: 8px; padding: 9px 0; border-bottom: 1px solid rgba(59,130,246,0.07); font-family: var(--fM); font-size: 11px; }
+.delta-row.header { color: var(--text-2); font-size: 9px; letter-spacing: .08em; text-transform: uppercase; }
+.delta-row:last-child { border-bottom: none; }
+
+/* FOOTER */
+footer { max-width: 1080px; margin: 0 auto; padding: 24px 40px 40px; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; font-family: var(--fM); font-size: 10px; color: var(--text-3); letter-spacing: .04em; }
+
+@media(max-width:980px) {
+  .hero-inner, .two-col, .insight-grid { grid-template-columns: 1fr; }
+  .kpi-grid { grid-template-columns: repeat(2,1fr); }
+  .matrix-grid { grid-template-columns: repeat(2,1fr); }
+  nav { padding: 0 20px; }
+  .main, .hero { padding-left: 20px; padding-right: 20px; }
+}
+@media(max-width:620px) {
+  .kpi-grid, .matrix-grid { grid-template-columns: 1fr; }
+  h1.hero-title { font-size: 26px; }
+  .family-tabs { margin-left: 0; margin-top: 10px; }
+  footer { flex-direction: column; gap: 8px; text-align: center; }
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-brand">Ploidia · Comparativo de Ensembles</div>
+  <div class="nav-chips">
+    <span class="nav-chip">Blind test</span>
+    <span class="nav-chip">CatBoost tabular</span>
+    <span class="nav-chip violet">Multimodal TE+BL</span>
+  </div>
+</nav>
+
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-left">
+      <div class="hero-eyebrow">Research Dashboard · Avaliação de Ensembles</div>
+      <h1 class="hero-title">O ensemble <em>ajudou?</em></h1>
+      <p class="hero-sub">Comparação dos 5 melhores modelos de cada abordagem contra seus respectivos ensembles. A leitura central é o delta de ROC-AUC do ensemble em relação ao melhor modelo individual do mesmo grupo.</p>
+    </div>
+    <div class="hero-card">
+      <div class="hc-label">Diagnóstico principal</div>
+      <div id="hero-verdict">—</div>
+      <div class="hc-detail" id="hc-detail-1"></div>
+      <div class="hc-mono" id="hc-detail-2"></div>
+    </div>
+  </div>
+</div>
+
+<main class="main">
+
+  <!-- KPIs -->
+  <div class="sec" id="sec-kpi">
+    <div class="kpi-grid" id="kpis"></div>
+  </div>
+
+  <!-- DELTA TABLE -->
+  <div class="sec" id="sec-delta">
+    <div class="sec-hd">
+      <span class="sec-num">01</span>
+      <span class="sec-ttl">Ganho ou perda do ensemble</span>
+    </div>
+    <p class="sec-desc">Delta calculado contra o melhor modelo individual por ROC-AUC dentro de cada família. Valores positivos indicam melhora do ensemble; negativos indicam queda.</p>
+    <div class="tbl-wrap" id="delta-table"></div>
+  </div>
+
+  <!-- ANÁLISE NARRATIVA -->
+  <div class="sec">
+    <div class="sec-hd">
+      <span class="sec-num">02</span>
+      <span class="sec-ttl">Leitura cruzada: Multimodal vs CatBoost</span>
+    </div>
+    <div class="insight-grid">
+      <div class="callout-card">
+        <h3>O que o ensemble realmente muda?</h3>
+        <p>No <strong>Multimodal TE+BL+Tabular</strong>, o ensemble por <em>média de probabilidades</em> alcança o maior ROC-AUC geral (+0.0009 vs. melhor individual), mas ao custo de queda expressiva de F1 (−0.095) e recall euploide (−0.128). O ensemble por <em>moda</em> piorou ROC-AUC (−0.018) mas melhorou recall e F1.</p>
+        <p>No <strong>CatBoost tabular</strong> o cenário é ainda mais claro: ambos os ensembles pioraram o ROC-AUC (−0.036 e −0.009). O melhor modelo individual supera qualquer ensemble da família em ROC-AUC.</p>
+        <p>Conclusão: <strong>ensembles não são universalmente benéficos</strong>. O ganho é marginal e dependente da métrica escolhida. No tabular puro, o ensemble claramente não compensa.</p>
+      </div>
+      <div class="val-table">
+        <table class="results">
+          <thead><tr><th>Família</th><th>Ensemble</th><th>Δ ROC-AUC</th><th>Δ F1</th><th>Δ Recall eupl.</th></tr></thead>
+          <tbody id="summary-delta-body"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- COMPARAÇÃO DE MÉTRICAS -->
+  <div class="sec" id="sec-bars">
+    <div class="sec-hd">
+      <span class="sec-num">03</span>
+      <span class="sec-ttl">Comparação de métricas — barras</span>
+    </div>
+    <p class="sec-desc">ROC-AUC, acurácia, F1-score, precision e recall euploide por família. Azul: modelos individuais · Teal: ensemble moda · Roxo: ensemble média.</p>
+    <div class="two-col">
+      <div class="chart-panel">
+        <div class="chart-title">Multimodal TE+BL+Tabular</div>
+        <div id="bar-multimodal"></div>
+      </div>
+      <div class="chart-panel">
+        <div class="chart-title">CatBoost tabular</div>
+        <div id="bar-catboost"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CURVAS ROC -->
+  <div class="sec" id="sec-roc">
+    <div class="sec-hd">
+      <span class="sec-num">04</span>
+      <span class="sec-ttl">Curvas ROC</span>
+    </div>
+    <p class="sec-desc">Ensembles em linha contínua, modelos individuais tracejados. A curva mais alta e à esquerda indica melhor discriminação.</p>
+    <div class="two-col">
+      <div class="chart-panel"><div id="roc-multimodal"></div></div>
+      <div class="chart-panel"><div id="roc-catboost"></div></div>
+    </div>
+  </div>
+
+  <!-- MATRIZES DE CONFUSÃO -->
+  <div class="sec" id="sec-matrix">
+    <div class="sec-hd">
+      <span class="sec-num">05</span>
+      <span class="sec-ttl">Matrizes de confusão</span>
+      <div class="family-tabs">
+        <button class="tab-button active" data-family="multimodal">Multimodal</button>
+        <button class="tab-button" data-family="catboost">CatBoost</button>
+      </div>
+    </div>
+    <p class="sec-desc">Linhas: classes reais · Colunas: classes preditas. Diagonal principal = acertos.</p>
+    <div class="matrix-grid" id="matrix-grid"></div>
+  </div>
+
+  <!-- TABELA COMPLETA -->
+  <div class="sec" id="sec-full">
+    <div class="sec-hd">
+      <span class="sec-num">06</span>
+      <span class="sec-ttl">Tabela completa — todos os modelos</span>
+    </div>
+    <p class="sec-desc">Métricas recalculadas diretamente das predições para garantir consistência total.</p>
+    <div class="tbl-wrap" id="full-table"></div>
+  </div>
+
+</main>
+
+<footer>
+  <span>Ploidia · Comparativo de Ensembles · Multimodal + CatBoost</span>
+  <span>Blind test · 2026</span>
+</footer>
+
+<script>
+const DATA = {"families":{"multimodal":{"label":"Multimodal TE+BL+Tabular","short":"Multimodal"},"catboost":{"label":"CatBoost tabular","short":"CatBoost"}},"metrics":[{"family":"multimodal","family_label":"Multimodal TE+BL+Tabular","family_short":"Multimodal","order":1,"type":"Modelo individual","model":"Top1_trial167_efficientnetv2_TE_BL_TABULAR","display":"Top1 trial 167 EffNetV2","n":592,"n_aneuploid":365,"n_euploid":227,"roc_auc":0.660081,"pr_auc":0.550102,"accuracy":0.635135,"balanced_accuracy":0.626661,"f1_score":0.553719,"precision":0.521401,"recall_euploid":0.590308,"specificity_aneuploid":0.663014,"npv_aneuploid":0.722388,"tn":242,"fp":123,"fn":93,"tp":134},{"family":"multimodal","family_label":"Multimodal TE+BL+Tabular","family_short":"Multimodal","order":2,"type":"Modelo individual","model":"Top2_trial35_efficientnetv2_TE_BL_TABULAR","display":"Top2 trial 35 EffNetV2","n":592,"n_aneuploid":365,"n_euploid":227,"roc_auc":0.684316,"pr_auc":0.578212,"accuracy":0.670608,"balanced_accuracy":0.616287,"f1_score":0.471545,"precision":0.612676,"recall_euploid":0.38326,"specificity_aneuploid":0.849315,"npv_aneuploid":0.688889,"tn":310,"fp":55,"fn":140,"tp":87},{"family":"multimodal","family_label":"Multimodal TE+BL+Tabular","family_short":"Multimodal","order":3,"type":"Modelo individual","model":"Top3_trial197_efficientnetv2_TE_BL_TABULAR","display":"Top3 trial 197 EffNetV2","n":592,"n_aneuploid":365,"n_euploid":227,"roc_auc":0.662519,"pr_auc":0.560928,"accuracy":0.648649,"balanced_accuracy":0.581824,"f1_score":0.391813,"precision":0.582609,"recall_euploid":0.295154,"specificity_aneuploid":0.868493,"npv_aneuploid":0.66457,"tn":317,"fp":48,"fn":160,"tp":67},{"family":"multimodal","family_label":"Multimodal TE+BL+Tabular","family_short":"Multimodal","order":4,"type":"Modelo individual","model":"Top4_trial211_efficientnetv2_TE_BL_TABULAR","display":"Top4 trial 211 EffNetV2","n":592,"n_aneuploid":365,"n_euploid":227,"roc_auc":0.652441,"pr_auc":0.559726,"accuracy":0.616554,"balanced_accuracy":0.606596,"f1_score":0.530021,"precision":0.5,"recall_euploid":0.563877,"specificity_aneuploid":0.649315,"npv_aneuploid":0.705357,"tn":237,"fp":128,"fn":99,"tp":128},{"family":"multimodal","family_label":"Multimodal TE+BL+Tabular","family_short":"Multimodal","order":5,"type":"Modelo individual","model":"Top5_trial342_swin_TE_BL_TABULAR","display":"Top5 trial 342 Swin","n":592,"n_aneuploid":365,"n_euploid":227,"roc_auc":0.671166,"pr_auc":0.570794,"accuracy":0.646959,"balanced_accuracy":0.622926,"f1_score":0.530337,"precision":0.541284,"recall_euploid":0.519824,"specificity_aneuploid":0.726027,"npv_aneuploid":0.708556,"tn":265,"fp":100,"fn":109,"tp":118},{"family":"multimodal","family_label":"Multimodal TE+BL+Tabular","family_short":"Multimodal","order":6,"type":"Ensemble","model":"Ensemble_moda_top5_TE_BL_TABULAR","display":"Ensemble moda","n":592,"n_aneuploid":365,"n_euploid":227,"roc_auc":0.666266,"pr_auc":0.52902,"accuracy":0.650338,"balanced_accuracy":0.61817,"f1_score":0.512941,"precision":0.550505,"recall_euploid":0.480176,"specificity_aneuploid":0.756164,"npv_aneuploid":0.700508,"tn":276,"fp":89,"fn":118,"tp":109},{"family":"multimodal","family_label":"Multimodal TE+BL+Tabular","family_short":"Multimodal","order":7,"type":"Ensemble","model":"Ensemble_media_probabilidades_top5_TE_BL_TABULAR","display":"Ensemble media prob.","n":592,"n_aneuploid":365,"n_euploid":227,"roc_auc":0.685215,"pr_auc":0.587905,"accuracy":0.675676,"balanced_accuracy":0.596246,"f1_score":0.376623,"precision":0.716049,"recall_euploid":0.255507,"specificity_aneuploid":0.936986,"npv_aneuploid":0.669276,"tn":342,"fp":23,"fn":169,"tp":58},{"family":"catboost","family_label":"CatBoost tabular","family_short":"CatBoost","order":1,"type":"Modelo individual","model":"CatBoost_top1_trial1188","display":"CatBoost top1 trial 1188","n":1000,"n_aneuploid":603,"n_euploid":397,"roc_auc":0.64111,"pr_auc":0.529676,"accuracy":0.622,"balanced_accuracy":0.59105,"f1_score":0.480769,"precision":0.528701,"recall_euploid":0.440806,"specificity_aneuploid":0.741294,"npv_aneuploid":0.668161,"tn":447,"fp":156,"fn":222,"tp":175},{"family":"catboost","family_label":"CatBoost tabular","family_short":"CatBoost","order":2,"type":"Modelo individual","model":"CatBoost_top2_trial3456","display":"CatBoost top2 trial 3456","n":1000,"n_aneuploid":603,"n_euploid":397,"roc_auc":0.673217,"pr_auc":0.575382,"accuracy":0.66,"balanced_accuracy":0.619977,"f1_score":0.498525,"precision":0.601423,"recall_euploid":0.425693,"specificity_aneuploid":0.814262,"npv_aneuploid":0.682893,"tn":491,"fp":112,"fn":228,"tp":169},{"family":"catboost","family_label":"CatBoost tabular","family_short":"CatBoost","order":3,"type":"Modelo individual","model":"CatBoost_top3_trial551","display":"CatBoost top3 trial 551","n":1000,"n_aneuploid":603,"n_euploid":397,"roc_auc":0.670969,"pr_auc":0.564791,"accuracy":0.639,"balanced_accuracy":0.616333,"f1_score":0.526868,"precision":0.54918,"recall_euploid":0.506297,"specificity_aneuploid":0.726368,"npv_aneuploid":0.690852,"tn":438,"fp":165,"fn":196,"tp":201},{"family":"catboost","family_label":"CatBoost tabular","family_short":"CatBoost","order":4,"type":"Modelo individual","model":"CatBoost_top4_trial4742","display":"CatBoost top4 trial 4742","n":1000,"n_aneuploid":603,"n_euploid":397,"roc_auc":0.668663,"pr_auc":0.552456,"accuracy":0.649,"balanced_accuracy":0.611717,"f1_score":0.493506,"precision":0.577703,"recall_euploid":0.43073,"specificity_aneuploid":0.792703,"npv_aneuploid":0.678977,"tn":478,"fp":125,"fn":226,"tp":171},{"family":"catboost","family_label":"CatBoost tabular","family_short":"CatBoost","order":5,"type":"Modelo individual","model":"CatBoost_top5_trial4702","display":"CatBoost top5 trial 4702","n":1000,"n_aneuploid":603,"n_euploid":397,"roc_auc":0.680606,"pr_auc":0.572391,"accuracy":0.639,"balanced_accuracy":0.62881,"f1_score":0.560292,"precision":0.542453,"recall_euploid":0.579345,"specificity_aneuploid":0.678275,"npv_aneuploid":0.710069,"tn":409,"fp":194,"fn":167,"tp":230},{"family":"catboost","family_label":"CatBoost tabular","family_short":"CatBoost","order":6,"type":"Ensemble","model":"Ensemble_moda_top5","display":"Ensemble moda","n":1000,"n_aneuploid":603,"n_euploid":397,"roc_auc":0.644993,"pr_auc":0.511977,"accuracy":0.645,"balanced_accuracy":0.613993,"f1_score":0.50899,"precision":0.564417,"recall_euploid":0.463476,"specificity_aneuploid":0.764511,"npv_aneuploid":0.683976,"tn":461,"fp":142,"fn":213,"tp":184},{"family":"catboost","family_label":"CatBoost tabular","family_short":"CatBoost","order":7,"type":"Ensemble","model":"Ensemble_media_probabilidades_top5","display":"Ensemble media prob.","n":1000,"n_aneuploid":603,"n_euploid":397,"roc_auc":0.671341,"pr_auc":0.564741,"accuracy":0.643,"balanced_accuracy":0.616638,"f1_score":0.520805,"precision":0.557471,"recall_euploid":0.488665,"specificity_aneuploid":0.74461,"npv_aneuploid":0.68865,"tn":449,"fp":154,"fn":203,"tp":194}],"deltas":[{"family":"multimodal","family_label":"Multimodal TE+BL+Tabular","ensemble":"Ensemble_moda_top5_TE_BL_TABULAR","ensemble_display":"Ensemble moda","baseline_model":"Top2_trial35_efficientnetv2_TE_BL_TABULAR","baseline_display":"Top2 trial 35 EffNetV2","roc_auc_ensemble":0.666266,"roc_auc_best_individual":0.684316,"roc_auc_delta":-0.01805,"accuracy_ensemble":0.650338,"accuracy_best_individual":0.670608,"accuracy_delta":-0.02027,"balanced_accuracy_ensemble":0.61817,"balanced_accuracy_best_individual":0.616287,"balanced_accuracy_delta":0.001883,"f1_score_ensemble":0.512941,"f1_score_best_individual":0.471545,"f1_score_delta":0.041396,"precision_ensemble":0.550505,"precision_best_individual":0.612676,"precision_delta":-0.062171,"recall_euploid_ensemble":0.480176,"recall_euploid_best_individual":0.38326,"recall_euploid_delta":0.096916},{"family":"multimodal","family_label":"Multimodal TE+BL+Tabular","ensemble":"Ensemble_media_probabilidades_top5_TE_BL_TABULAR","ensemble_display":"Ensemble media prob.","baseline_model":"Top2_trial35_efficientnetv2_TE_BL_TABULAR","baseline_display":"Top2 trial 35 EffNetV2","roc_auc_ensemble":0.685215,"roc_auc_best_individual":0.684316,"roc_auc_delta":0.000899,"accuracy_ensemble":0.675676,"accuracy_best_individual":0.670608,"accuracy_delta":0.005068,"balanced_accuracy_ensemble":0.596246,"balanced_accuracy_best_individual":0.616287,"balanced_accuracy_delta":-0.020041,"f1_score_ensemble":0.376623,"f1_score_best_individual":0.471545,"f1_score_delta":-0.094921,"precision_ensemble":0.716049,"precision_best_individual":0.612676,"precision_delta":0.103373,"recall_euploid_ensemble":0.255507,"recall_euploid_best_individual":0.38326,"recall_euploid_delta":-0.127753},{"family":"catboost","family_label":"CatBoost tabular","ensemble":"Ensemble_moda_top5","ensemble_display":"Ensemble moda","baseline_model":"CatBoost_top5_trial4702","baseline_display":"CatBoost top5 trial 4702","roc_auc_ensemble":0.644993,"roc_auc_best_individual":0.680606,"roc_auc_delta":-0.035613,"accuracy_ensemble":0.645,"accuracy_best_individual":0.639,"accuracy_delta":0.006,"balanced_accuracy_ensemble":0.613993,"balanced_accuracy_best_individual":0.62881,"balanced_accuracy_delta":-0.014817,"f1_score_ensemble":0.50899,"f1_score_best_individual":0.560292,"f1_score_delta":-0.051302,"precision_ensemble":0.564417,"precision_best_individual":0.542453,"precision_delta":0.021964,"recall_euploid_ensemble":0.463476,"recall_euploid_best_individual":0.579345,"recall_euploid_delta":-0.115869},{"family":"catboost","family_label":"CatBoost tabular","ensemble":"Ensemble_media_probabilidades_top5","ensemble_display":"Ensemble media prob.","baseline_model":"CatBoost_top5_trial4702","baseline_display":"CatBoost top5 trial 4702","roc_auc_ensemble":0.671341,"roc_auc_best_individual":0.680606,"roc_auc_delta":-0.009265,"accuracy_ensemble":0.643,"accuracy_best_individual":0.639,"accuracy_delta":0.004,"balanced_accuracy_ensemble":0.616638,"balanced_accuracy_best_individual":0.62881,"balanced_accuracy_delta":-0.012173,"f1_score_ensemble":0.520805,"f1_score_best_individual":0.560292,"f1_score_delta":-0.039487,"precision_ensemble":0.557471,"precision_best_individual":0.542453,"precision_delta":0.015018,"recall_euploid_ensemble":0.488665,"recall_euploid_best_individual":0.579345,"recall_euploid_delta":-0.09068}],"roc":[{"family":"multimodal","model":"Top1_trial167_efficientnetv2_TE_BL_TABULAR","display":"Top1 trial 167 EffNetV2","type":"Modelo individual","auc":0.660081,"points":[[0.0,0.0],[0.016438,0.079295],[0.079452,0.202643],[0.186301,0.38326],[0.342466,0.599119],[0.493151,0.69163],[0.649315,0.828194],[0.813699,0.907489],[0.945205,0.969163],[1.0,1.0]]},{"family":"multimodal","model":"Top2_trial35_efficientnetv2_TE_BL_TABULAR","display":"Top2 trial 35 EffNetV2","type":"Modelo individual","auc":0.684316,"points":[[0.0,0.0],[0.016438,0.096916],[0.090411,0.277533],[0.200,0.427313],[0.334247,0.625551],[0.482192,0.744493],[0.632877,0.84141],[0.772603,0.903084],[0.950685,0.969163],[1.0,1.0]]},{"family":"multimodal","model":"Top3_trial197_efficientnetv2_TE_BL_TABULAR","display":"Top3 trial 197 EffNetV2","type":"Modelo individual","auc":0.662519,"points":[[0.0,0.0],[0.013699,0.070485],[0.082192,0.242291],[0.194521,0.39207],[0.309589,0.572687],[0.435616,0.665198],[0.575342,0.744493],[0.715068,0.837004],[0.920548,0.969163],[1.0,1.0]]},{"family":"multimodal","model":"Top4_trial211_efficientnetv2_TE_BL_TABULAR","display":"Top4 trial 211 EffNetV2","type":"Modelo individual","auc":0.652441,"points":[[0.0,0.0],[0.060274,0.185022],[0.147945,0.396476],[0.271233,0.53304],[0.405479,0.643172],[0.531507,0.726872],[0.660274,0.84141],[0.789041,0.920705],[0.942466,0.991189],[1.0,1.0]]},{"family":"multimodal","model":"Top5_trial342_swin_TE_BL_TABULAR","display":"Top5 trial 342 Swin","type":"Modelo individual","auc":0.671166,"points":[[0.0,0.0],[0.063014,0.211454],[0.161644,0.418502],[0.276712,0.53304],[0.416438,0.687225],[0.575342,0.77533],[0.693151,0.84141],[0.827397,0.920705],[0.980822,0.991189],[1.0,1.0]]},{"family":"multimodal","model":"Ensemble_moda_top5_TE_BL_TABULAR","display":"Ensemble moda","type":"Ensemble","auc":0.666266,"points":[[0.0,0.0],[0.063014,0.207048],[0.128767,0.343612],[0.243836,0.480176],[0.323288,0.594714],[0.484932,0.726872],[1.0,1.0]]},{"family":"multimodal","model":"Ensemble_media_probabilidades_top5_TE_BL_TABULAR","display":"Ensemble media prob.","type":"Ensemble","auc":0.685215,"points":[[0.0,0.0],[0.046575,0.202643],[0.134247,0.356828],[0.245439,0.488987],[0.364384,0.665198],[0.468493,0.740088],[0.591781,0.814978],[0.719178,0.863436],[0.917808,0.969163],[1.0,1.0]]},{"family":"catboost","model":"CatBoost_top1_trial1188","display":"CatBoost top1 trial 1188","type":"Modelo individual","auc":0.64111,"points":[[0.0,0.0],[0.039801,0.09068],[0.155887,0.329975],[0.247098,0.43073],[0.369818,0.59194],[0.495854,0.675063],[0.638474,0.806045],[0.784411,0.884131],[0.960199,0.992443],[1.0,1.0]]},{"family":"catboost","model":"CatBoost_top2_trial3456","display":"CatBoost top2 trial 3456","type":"Modelo individual","auc":0.673217,"points":[[0.0,0.0],[0.034826,0.118388],[0.12272,0.332494],[0.220564,0.460957],[0.328358,0.579345],[0.480929,0.720403],[0.628524,0.811083],[0.78607,0.90932],[0.983416,0.994962],[1.0,1.0]]},{"family":"catboost","model":"CatBoost_top3_trial551","display":"CatBoost top3 trial 551","type":"Modelo individual","auc":0.670969,"points":[[0.0,0.0],[0.041459,0.123426],[0.12272,0.312343],[0.207297,0.420655],[0.300166,0.541562],[0.40796,0.654912],[0.519071,0.75063],[0.641791,0.836272],[0.936982,0.987406],[1.0,1.0]]},{"family":"catboost","model":"CatBoost_top4_trial4742","display":"CatBoost top4 trial 4742","type":"Modelo individual","auc":0.668663,"points":[[0.0,0.0],[0.043118,0.09068],[0.144279,0.319899],[0.235489,0.488665],[0.351575,0.607053],[0.44942,0.695214],[0.580431,0.785894],[0.709784,0.876574],[0.966833,0.994962],[1.0,1.0]]},{"family":"catboost","model":"CatBoost_top5_trial4702","display":"CatBoost top5 trial 4702","type":"Modelo individual","auc":0.680606,"points":[[0.0,0.0],[0.031509,0.11335],[0.124378,0.324937],[0.225539,0.511335],[0.325041,0.581864],[0.416252,0.667506],[0.529022,0.753149],[0.645108,0.843829],[0.941957,0.984887],[1.0,1.0]]},{"family":"catboost","model":"Ensemble_moda_top5","display":"Ensemble moda","type":"Ensemble","auc":0.644993,"points":[[0.0,0.0],[0.144279,0.337531],[0.197347,0.413098],[0.235489,0.463476],[0.296849,0.546599],[0.373134,0.622166],[1.0,1.0]]},{"family":"catboost","model":"Ensemble_media_probabilidades_top5","display":"Ensemble media prob.","type":"Ensemble","auc":0.671341,"points":[[0.0,0.0],[0.036484,0.105793],[0.144279,0.36272],[0.262023,0.503778],[0.363184,0.629723],[0.466003,0.695214],[0.588723,0.803526],[0.721393,0.874055],[0.981758,1.0],[1.0,1.0]]}]};
+
+const fmt = (v,d=3) => v==null?"—":Number(v).toFixed(d);
+const signed = v => { const s=v>0?"+":""; return `${s}${Number(v).toFixed(4)}`; };
+const clsDelta = v => Number(v)>=0?"delta-pos":"delta-neg";
+
+function familyRows(f) { return DATA.metrics.filter(d=>d.family===f); }
+function bestIndividual(f,m="roc_auc") { return familyRows(f).filter(d=>d.type==="Modelo individual").sort((a,b)=>b[m]-a[m])[0]; }
+function bestEnsemble(f,m="roc_auc")   { return familyRows(f).filter(d=>d.type==="Ensemble").sort((a,b)=>b[m]-a[m])[0]; }
+
+function renderHero() {
+  const multiBest=bestIndividual("multimodal"), multiEns=bestEnsemble("multimodal");
+  const catBest=bestIndividual("catboost"),     catEns=bestEnsemble("catboost");
+  const multiDelta=multiEns.roc_auc-multiBest.roc_auc;
+  const catDelta=catEns.roc_auc-catBest.roc_auc;
+  const verdict=multiDelta>0&&catDelta<=0?"Ajuda marginal no multimodal; não ajuda no CatBoost.":"O efeito do ensemble varia por família de modelo.";
+  document.getElementById("hero-verdict").textContent=verdict;
+  document.getElementById("hc-detail-1").textContent="No multimodal, o ensemble por média chega ao maior ROC-AUC, mas a melhora é pequena e vem com queda de F1/recall. No CatBoost, o melhor modelo individual supera os ensembles em ROC-AUC.";
+  document.getElementById("hc-detail-2").textContent=`Multimodal Δ ROC-AUC ${signed(multiDelta)} · CatBoost Δ ROC-AUC ${signed(catDelta)}`;
+}
+
+function renderKpis() {
+  const configs=[
+    {label:"Multimodal · Casos",val:familyRows("multimodal")[0].n,note:"Com par TE+BL disponível"},
+    {label:"CatBoost · Casos",val:familyRows("catboost")[0].n,note:"Blind test tabular completo"},
+    {label:"Multimodal · Melhor ROC-AUC",val:fmt(bestEnsemble("multimodal").roc_auc,3),note:bestEnsemble("multimodal").display},
+    {label:"CatBoost · Melhor ROC-AUC",val:fmt(bestIndividual("catboost").roc_auc,3),note:bestIndividual("catboost").display},
+  ];
+  document.getElementById("kpis").innerHTML=configs.map(d=>`
+    <div class="kpi-card">
+      <div class="kpi-lbl">${d.label}</div>
+      <div class="kpi-val">${d.val}</div>
+      <div class="kpi-note">${d.note}</div>
+    </div>
+  `).join("");
+}
+
+function renderDeltaTable() {
+  const cols=[["family_label","Família"],["ensemble_display","Ensemble"],["baseline_display","Melhor individual"],["roc_auc_delta","Δ ROC-AUC"],["accuracy_delta","Δ Acurácia"],["f1_score_delta","Δ F1"],["precision_delta","Δ Precision"],["recall_euploid_delta","Δ Recall eupl."]];
+  let html=`<table class="results"><thead><tr>${cols.map(c=>`<th>${c[1]}</th>`).join("")}</tr></thead><tbody>`;
+  for(const row of DATA.deltas){
+    html+="<tr>"+cols.map(c=>{
+      const v=row[c[0]];
+      if(c[0].includes("_delta")) return `<td class="num ${clsDelta(v)}">${signed(v)}</td>`;
+      return `<td>${v}</td>`;
+    }).join("")+"</tr>";
+  }
+  html+="</tbody></table>";
+  document.getElementById("delta-table").innerHTML=html;
+}
+
+function renderSummaryDelta() {
+  document.getElementById("summary-delta-body").innerHTML=DATA.deltas.map(row=>`
+    <tr>
+      <td>${row.family_label}</td>
+      <td>${row.ensemble_display}</td>
+      <td class="num ${clsDelta(row.roc_auc_delta)}">${signed(row.roc_auc_delta)}</td>
+      <td class="num ${clsDelta(row.f1_score_delta)}">${signed(row.f1_score_delta)}</td>
+      <td class="num ${clsDelta(row.recall_euploid_delta)}">${signed(row.recall_euploid_delta)}</td>
+    </tr>
+  `).join("");
+}
+
+function barChart(id,family) {
+  const rows=familyRows(family);
+  const metrics=[["roc_auc","ROC-AUC"],["accuracy","Acurácia"],["f1_score","F1"],["precision","Precision"],["recall_euploid","Recall eupl."]];
+  const W=580,H=320,left=130,top=22,groupH=52,barH=7;
+  let svg=`<svg viewBox="0 0 ${W} ${H}" role="img">`;
+  [0,.25,.5,.75,1].forEach(t=>{
+    const x=left+t*(W-left-20);
+    svg+=`<line x1="${x}" y1="${top}" x2="${x}" y2="${H-30}" stroke="rgba(15,23,42,0.06)" stroke-width="1"/>`;
+    svg+=`<text x="${x}" y="${H-12}" text-anchor="middle" font-size="9" fill="#94A3B8" font-family="'JetBrains Mono',monospace">${t.toFixed(2)}</text>`;
+  });
+  metrics.forEach((m,gi)=>{
+    const y=top+gi*groupH;
+    svg+=`<text x="4" y="${y+14}" font-size="10" fill="#475569" font-weight="600" font-family="'JetBrains Mono',monospace">${m[1]}</text>`;
+    rows.forEach((r,i)=>{
+      const width=Math.max(2,r[m[0]]*(W-left-20));
+      const yy=y+i*(barH+2);
+      const isEns=r.type==="Ensemble";
+      const color=isEns?(r.display.includes("media")?"#818CF8":"#3B82F6"):"#60A5FA";
+      const op=isEns?"1":"0.55";
+      svg+=`<rect x="${left}" y="${yy}" width="${width}" height="${barH}" rx="2" fill="${color}" opacity="${op}"><title>${r.display}: ${fmt(r[m[0]],3)}</title></rect>`;
+    });
+  });
+  svg+=`</svg>`;
+  document.getElementById(id).innerHTML=svg+`<div class="small-note">Azul: modelos individuais · Teal: Ensemble moda · Roxo: Ensemble média</div>`;
+}
+
+function rocChart(id,family) {
+  const rows=DATA.roc.filter(d=>d.family===family);
+  const W=580,H=340,left=44,right=150,top=16,bottom=36;
+  const plotW=W-left-right,plotH=H-top-bottom;
+  const colors=["#60A5FA","#3B82F6","#818CF8","#F59E0B","#6366F1","#059669","#DC2626"];
+  const x=v=>left+v*plotW, y=v=>top+(1-v)*plotH;
+  let svg=`<svg viewBox="0 0 ${W} ${H}" role="img">`;
+  [0,.25,.5,.75,1].forEach(t=>{
+    svg+=`<line x1="${x(t)}" y1="${top}" x2="${x(t)}" y2="${top+plotH}" stroke="rgba(15,23,42,0.06)" stroke-width="1"/>`;
+    svg+=`<line x1="${left}" y1="${y(t)}" x2="${left+plotW}" y2="${y(t)}" stroke="rgba(15,23,42,0.06)" stroke-width="1"/>`;
+    svg+=`<text x="${x(t)}" y="${H-10}" text-anchor="middle" font-size="9" fill="#94A3B8" font-family="'JetBrains Mono',monospace">${t.toFixed(2)}</text>`;
+    svg+=`<text x="${left-6}" y="${y(t)+3}" text-anchor="end" font-size="9" fill="#94A3B8" font-family="'JetBrains Mono',monospace">${t.toFixed(2)}</text>`;
+  });
+  svg+=`<line x1="${left}" y1="${top+plotH}" x2="${left+plotW}" y2="${top}" stroke="#94A3B8" stroke-dasharray="3 4" stroke-width="1"/>`;
+  rows.forEach((r,i)=>{
+    const path=r.points.map((p,j)=>`${j?"L":"M"}${x(p[0]).toFixed(1)} ${y(p[1]).toFixed(1)}`).join(" ");
+    const color=colors[i%colors.length];
+    const dash=r.type==="Ensemble"?"":"stroke-dasharray='6 4'";
+    const width=r.type==="Ensemble"?2.5:1.5;
+    svg+=`<path d="${path}" fill="none" stroke="${color}" stroke-width="${width}" ${dash} stroke-linejoin="round"/>`;
+    svg+=`<rect x="${W-right+10}" y="${top+i*20}" width="12" height="3" rx="1" fill="${color}"/>`;
+    svg+=`<text x="${W-right+27}" y="${top+i*20+5}" font-size="9" fill="#475569" font-family="'JetBrains Mono',monospace">${r.display} (${fmt(r.auc,3)})</text>`;
+  });
+  svg+=`</svg>`;
+  document.getElementById(id).innerHTML=svg;
+}
+
+function renderMatrices(family) {
+  const rows=familyRows(family);
+  document.getElementById("matrix-grid").innerHTML=rows.map(r=>{
+    const vals=[r.tn,r.fp,r.fn,r.tp];
+    const max=Math.max(...vals);
+    const cells=vals.map(v=>{
+      const alpha=0.15+0.75*(v/max);
+      return `<div class="cell" style="background:rgba(59,130,246,${alpha})">${v}</div>`;
+    }).join("");
+    return `<div class="matrix-card">
+      <div class="matrix-title">${r.display}</div>
+      <div class="matrix">${cells}</div>
+      <div class="axis-labels"><span>Pred: aneu/eupl</span><span>Real: aneu/eupl</span></div>
+    </div>`;
+  }).join("");
+}
+
+function renderFullTable() {
+  const cols=[["family_short","Família"],["display","Modelo"],["type","Tipo"],["roc_auc","ROC-AUC"],["accuracy","Acurácia"],["balanced_accuracy","Bal.Acc"],["f1_score","F1"],["precision","Precision"],["recall_euploid","Recall eupl."],["specificity_aneuploid","Sens. aneupl."],["tn","TN"],["fp","FP"],["fn","FN"],["tp","TP"]];
+  let html=`<table class="results"><thead><tr>${cols.map(c=>`<th>${c[1]}</th>`).join("")}</tr></thead><tbody>`;
+  DATA.metrics.forEach(r=>{
+    html+="<tr>"+cols.map(c=>{
+      const v=r[c[0]];
+      if(c[0]==="type"){const cls=v==="Ensemble"?"tag-ensemble":"tag-model";return`<td><span class="${cls}">${v}</span></td>`;}
+      if(typeof v==="number"&&!["tn","fp","fn","tp"].includes(c[0]))return`<td class="num">${fmt(v,3)}</td>`;
+      if(["tn","fp","fn","tp"].includes(c[0]))return`<td class="num">${v}</td>`;
+      return`<td>${v}</td>`;
+    }).join("")+"</tr>";
+  });
+  html+="</tbody></table>";
+  document.getElementById("full-table").innerHTML=html;
+}
+
+// Init
+renderHero(); renderKpis(); renderDeltaTable(); renderSummaryDelta();
+barChart("bar-multimodal","multimodal"); barChart("bar-catboost","catboost");
+rocChart("roc-multimodal","multimodal"); rocChart("roc-catboost","catboost");
+renderMatrices("multimodal"); renderFullTable();
+
+document.querySelectorAll(".tab-button").forEach(btn=>{
+  btn.addEventListener("click",()=>{
+    document.querySelectorAll(".tab-button").forEach(b=>b.classList.remove("active"));
+    btn.classList.add("active");
+    renderMatrices(btn.dataset.family);
+  });
+});
+
+(function(){const io=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('show');io.unobserve(e.target);}});},{threshold:0.08});document.querySelectorAll('.sec').forEach(s=>io.observe(s));document.getElementById('sec-kpi').classList.add('show');})();
+</script>
+</body>
+</html>
