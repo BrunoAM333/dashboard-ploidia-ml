@@ -1,0 +1,1692 @@
+<!DOCTYPE html>
+<html lang="pt-BR"><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EvoNet - Ploidia</title>
+
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;family=Inter:wght@300;400;500;600&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<!-- Libraries -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+<style>
+  :root {
+    --bg: #060B18;
+    --surface: #0C1628;
+    --surface-alt: #08101F;
+    --surface-lift: #101E38;
+    --border: rgba(255,255,255,0.055);
+    --border-strong: rgba(0,212,170,0.18);
+    --teal: #00D4AA;
+    --teal-mid: #00A8D4;
+    --teal-glow: rgba(0,212,170,0.18);
+    --teal-dim: rgba(0,212,170,0.08);
+    --violet: #7C3AED;
+    --violet-lt: #A78BFA;
+    --violet-dim: rgba(124,58,237,0.12);
+    --gold: #F59E0B;
+    --gold-dim: rgba(245,158,11,0.10);
+    --red-soft: #F87171;
+    --blue-soft: #00A8D4;
+    --green-900: #060B18;
+    --green-700: #00D4AA;
+    --green-500: #00D4AA;
+    --green-400: #00A8D4;
+    --green-300: #A78BFA;
+    --green-100: rgba(0,212,170,0.10);
+    --green-50: rgba(0,212,170,0.06);
+    --accent: #00D4AA;
+    --accent-light: #00A8D4;
+    --text-primary: #DDE6F5;
+    --text-secondary: #7B8FAF;
+    --text-muted: #4D6386;
+    --text-on-accent: #04111A;
+    --radius: 10px;
+    --radius-lg: 16px;
+    --shadow: 0 18px 44px rgba(0,0,0,0.28);
+    --shadow-md: 0 24px 60px rgba(0,0,0,0.36);
+    --font-display: 'Space Grotesk', system-ui, sans-serif;
+    --font-body: 'Inter', system-ui, sans-serif;
+    --font-mono: 'JetBrains Mono', 'Fira Mono', monospace;
+    --transition: 0.18s ease;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: var(--font-body);
+    background:
+      linear-gradient(180deg, rgba(16,30,56,0.35) 0%, rgba(6,11,24,0) 360px),
+      repeating-linear-gradient(90deg, rgba(255,255,255,0.018) 0 1px, transparent 1px 96px),
+      var(--bg);
+    color: var(--text-primary);
+    min-height: 100vh;
+    font-size: 14px;
+    line-height: 1.65;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .shell { display: flex; min-height: 100vh; }
+
+  .sidebar {
+    width: 252px;
+    background: rgba(8,16,31,0.94);
+    color: var(--text-primary);
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+    position: fixed;
+    top: 0; left: 0; bottom: 0;
+    z-index: 100;
+    overflow-y: auto;
+    border-right: 1px solid var(--border);
+    backdrop-filter: blur(16px);
+  }
+  .sidebar-logo {
+    padding: 28px 24px 22px;
+    border-bottom: 1px solid var(--border);
+    position: relative;
+  }
+  .sidebar-logo::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--teal), var(--violet));
+  }
+  .sidebar-logo .logo-label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--teal);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 9px;
+  }
+  .sidebar-logo .logo-label::before {
+    content: '';
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--teal);
+    box-shadow: 0 0 10px var(--teal);
+  }
+  .sidebar-logo .logo-title {
+    font-family: var(--font-display);
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--text-primary);
+    line-height: 1.1;
+  }
+  .sidebar-logo .logo-sub {
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-top: 7px;
+  }
+  .sidebar-nav { flex: 1; padding: 14px 0; }
+  .nav-section-label {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    padding: 18px 24px 7px;
+    font-weight: 500;
+  }
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    min-height: 42px;
+    padding: 10px 24px;
+    cursor: pointer;
+    color: var(--text-secondary);
+    font-size: 13px;
+    transition: var(--transition);
+    border-left: 2px solid transparent;
+    user-select: none;
+  }
+  .nav-item:hover {
+    background: rgba(0,212,170,0.055);
+    color: var(--text-primary);
+  }
+  .nav-item.active {
+    color: var(--teal);
+    background: linear-gradient(90deg, rgba(0,212,170,0.12), transparent);
+    border-left-color: var(--teal);
+  }
+  .nav-item .nav-icon {
+    width: 20px;
+    text-align: center;
+    flex-shrink: 0;
+    filter: saturate(0.8);
+    opacity: 0.86;
+  }
+  .sidebar-footer {
+    padding: 16px 24px;
+    border-top: 1px solid var(--border);
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    color: var(--text-muted);
+  }
+
+  .main {
+    margin-left: 252px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  .topbar {
+    background: rgba(6,11,24,0.88);
+    border-bottom: 1px solid var(--border);
+    padding: 13px 36px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    gap: 16px;
+    backdrop-filter: blur(16px);
+  }
+  .topbar-title {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    color: var(--teal);
+    text-transform: uppercase;
+  }
+  .topbar-actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    min-height: 34px;
+    padding: 7px 14px;
+    border-radius: var(--radius);
+    font-family: var(--font-body);
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: var(--transition);
+    white-space: nowrap;
+  }
+  .btn-primary {
+    background: linear-gradient(135deg, var(--teal), var(--teal-mid));
+    color: #04111A;
+    border-color: rgba(0,212,170,0.35);
+    box-shadow: 0 0 0 1px rgba(0,212,170,0.12), 0 10px 24px rgba(0,212,170,0.14);
+  }
+  .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 12px 30px rgba(0,212,170,0.22); }
+  .btn-outline {
+    background: var(--teal-dim);
+    color: var(--teal);
+    border-color: rgba(0,212,170,0.18);
+  }
+  .btn-outline:hover { background: rgba(0,212,170,0.13); border-color: rgba(0,212,170,0.34); }
+  .btn-ghost {
+    background: rgba(255,255,255,0.025);
+    color: var(--text-secondary);
+    border-color: var(--border);
+  }
+  .btn-ghost:hover { color: var(--text-primary); background: rgba(255,255,255,0.055); }
+  .btn-sm { min-height: 28px; padding: 5px 11px; font-size: 11px; }
+
+  .page { display: none; padding: 34px 40px 44px; flex: 1; }
+  .page.active { display: block; }
+  .page-header {
+    margin-bottom: 28px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--border);
+  }
+  .page-header h1 {
+    font-family: var(--font-display);
+    font-size: clamp(28px, 3vw, 40px);
+    font-weight: 700;
+    line-height: 1.12;
+    color: var(--text-primary);
+    letter-spacing: 0;
+  }
+  .page-header h1::after {
+    content: '';
+    display: block;
+    width: 42px;
+    height: 2px;
+    margin-top: 14px;
+    background: linear-gradient(90deg, var(--teal), var(--violet));
+  }
+  .page-header p { color: var(--text-secondary); font-size: 14px; margin-top: 10px; max-width: 680px; }
+
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(205px, 1fr));
+    gap: 16px;
+    margin-bottom: 32px;
+  }
+  .kpi-card, .panel, .rank-card, .arch-card {
+    background: linear-gradient(180deg, rgba(16,30,56,0.72), rgba(12,22,40,0.98));
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+    position: relative;
+  }
+  .kpi-card {
+    border-radius: var(--radius-lg);
+    padding: 20px;
+    overflow: hidden;
+    transition: var(--transition);
+  }
+  .kpi-card:hover, .rank-card:hover, .arch-card:hover { transform: translateY(-1px); border-color: rgba(0,212,170,0.16); }
+  .kpi-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--teal), var(--teal-mid), var(--violet));
+  }
+  .kpi-card.highlight::before { background: linear-gradient(90deg, var(--gold), #F97316); }
+  .kpi-label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--text-secondary);
+    font-weight: 500;
+  }
+  .kpi-value {
+    font-family: var(--font-display);
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--teal);
+    margin: 8px 0 3px;
+    line-height: 1;
+  }
+  .kpi-value.large { font-size: 34px; }
+  .kpi-sub { font-size: 12px; color: var(--text-secondary); }
+  .kpi-icon { position: absolute; top: 18px; right: 18px; font-size: 22px; opacity: 0.18; }
+
+  .grid-2 { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 20px; }
+  .grid-3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
+  @media (max-width: 960px) { .grid-2, .grid-3 { grid-template-columns: 1fr; } }
+
+  .panel {
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+  }
+  .panel::before {
+    content: '';
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 1px;
+    background: linear-gradient(90deg, rgba(0,212,170,0.34), rgba(124,58,237,0.2), transparent);
+    pointer-events: none;
+  }
+  .panel-header {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    background: rgba(8,16,31,0.72);
+  }
+  .panel-header h3 {
+    font-family: var(--font-display);
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-primary);
+    line-height: 1.25;
+  }
+  .panel-body { padding: 20px; }
+  .panel-body.p0 { padding: 0; }
+
+  .table-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th {
+    background: rgba(8,16,31,0.82);
+    color: var(--text-secondary);
+    font-family: var(--font-mono);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 11px 14px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    user-select: none;
+    white-space: nowrap;
+  }
+  th:hover { color: var(--teal); background: rgba(0,212,170,0.055); }
+  td { padding: 11px 14px; border-bottom: 1px solid rgba(255,255,255,0.045); vertical-align: middle; color: var(--text-secondary); }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: rgba(0,212,170,0.035); color: var(--text-primary); }
+  tr.best-row td { background: rgba(0,212,170,0.07); font-weight: 600; color: var(--text-primary); }
+  tr.best-row td:first-child { border-left: 3px solid var(--teal); padding-left: 11px; }
+
+  .badge, .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 9px;
+    border-radius: 999px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    background: var(--teal-dim);
+    color: var(--teal);
+    border: 1px solid rgba(0,212,170,0.14);
+  }
+  .badge-gold { background: var(--gold-dim); color: var(--gold); border-color: rgba(245,158,11,0.18); }
+  .badge-green { background: var(--teal-dim); color: var(--teal); }
+  .badge-blue { background: var(--violet-dim); color: var(--violet-lt); border-color: rgba(124,58,237,0.18); }
+
+  .chart-wrap { position: relative; min-height: 280px; }
+  .chart-wrap canvas { max-height: 340px; }
+
+  .table-controls {
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    align-items: center;
+    background: rgba(8,16,31,0.45);
+  }
+  .search-input, select.filter-select {
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 8px 12px;
+    font-size: 13px;
+    background: rgba(8,16,31,0.72);
+    color: var(--text-primary);
+    outline: none;
+    min-width: 200px;
+    transition: var(--transition);
+  }
+  .search-input::placeholder { color: var(--text-muted); }
+  .search-input:focus, select.filter-select:focus {
+    border-color: rgba(0,212,170,0.42);
+    box-shadow: 0 0 0 3px rgba(0,212,170,0.08);
+  }
+  select.filter-select { cursor: pointer; }
+
+  .pagination { display: flex; align-items: center; gap: 6px; padding: 13px 20px; justify-content: flex-end; border-top: 1px solid var(--border); }
+  .page-btn {
+    padding: 5px 10px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    font-size: 12px;
+    cursor: pointer;
+    background: rgba(8,16,31,0.72);
+    color: var(--text-secondary);
+    transition: var(--transition);
+  }
+  .page-btn:hover { border-color: rgba(0,212,170,0.28); color: var(--teal); }
+  .page-btn.active { background: var(--teal); color: #04111A; border-color: var(--teal); }
+
+  .empty-state {
+    text-align: center;
+    padding: 64px 20px;
+    color: var(--text-muted);
+    background: rgba(12,22,40,0.72);
+    border: 1px dashed rgba(0,212,170,0.18);
+    border-radius: var(--radius-lg);
+  }
+  .empty-state .empty-icon { font-size: 46px; margin-bottom: 12px; opacity: 0.78; }
+  .empty-state p { font-size: 14px; color: var(--text-secondary); }
+  .empty-state strong { display: block; font-size: 18px; color: var(--text-primary); margin-bottom: 6px; }
+
+  .upload-zone {
+    border: 1px dashed rgba(0,212,170,0.28);
+    border-radius: var(--radius-lg);
+    padding: 48px;
+    text-align: center;
+    background: var(--teal-dim);
+    cursor: pointer;
+    transition: var(--transition);
+  }
+  .upload-zone:hover { border-color: rgba(0,212,170,0.5); background: rgba(0,212,170,0.11); }
+  .upload-zone .zone-icon { font-size: 40px; margin-bottom: 12px; }
+  .upload-zone p { color: var(--text-secondary); font-size: 14px; }
+  .upload-zone strong { font-size: 16px; color: var(--text-primary); display: block; margin-bottom: 6px; }
+
+  .multi-select-wrap {
+    max-height: 220px;
+    overflow-y: auto;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: rgba(8,16,31,0.42);
+  }
+  .multi-select-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 14px;
+    cursor: pointer;
+    font-size: 13px;
+    transition: var(--transition);
+    border-bottom: 1px solid var(--border);
+    color: var(--text-secondary);
+  }
+  .multi-select-item:last-child { border-bottom: none; }
+  .multi-select-item:hover { background: rgba(0,212,170,0.055); color: var(--text-primary); }
+  .multi-select-item.selected { background: var(--teal-dim); color: var(--teal); font-weight: 600; }
+  .multi-select-item input[type=checkbox] { accent-color: var(--teal); }
+
+  .tabs { display: flex; gap: 6px; flex-wrap: wrap; }
+  .tab-btn {
+    padding: 6px 13px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+    border: 1px solid var(--border);
+    background: rgba(8,16,31,0.72);
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: var(--transition);
+  }
+  .tab-btn:hover { border-color: rgba(0,212,170,0.28); color: var(--teal); }
+  .tab-btn.active { background: var(--teal-dim); color: var(--teal); border-color: rgba(0,212,170,0.28); }
+
+  .rank-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; }
+  .rank-card {
+    border-radius: var(--radius-lg);
+    padding: 16px;
+    transition: var(--transition);
+  }
+  .rank-card-title {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--teal);
+    margin-bottom: 12px;
+  }
+  .rank-entry { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--border); }
+  .rank-entry:last-child { border-bottom: none; }
+  .rank-pos { width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: var(--font-mono); font-size: 11px; font-weight: 500; flex-shrink: 0; }
+  .rank-pos-1 { background: var(--gold); color: #1A1200; }
+  .rank-pos-2 { background: rgba(167,139,250,0.18); color: var(--violet-lt); }
+  .rank-pos-3 { background: rgba(0,168,212,0.18); color: var(--teal-mid); }
+  .rank-pos-n { background: rgba(255,255,255,0.055); color: var(--text-secondary); }
+  .rank-info { flex: 1; min-width: 0; }
+  .rank-name { font-size: 13px; font-weight: 600; color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .rank-arch { font-size: 11px; color: var(--text-muted); }
+  .rank-value { font-family: var(--font-mono); font-size: 15px; font-weight: 500; color: var(--teal); flex-shrink: 0; }
+
+  .conf-img-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 300px;
+    background: rgba(8,16,31,0.72);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    cursor: zoom-in;
+    position: relative;
+  }
+  .conf-img-wrap img { max-width: 100%; max-height: 500px; display: block; transition: transform 0.2s; }
+  .conf-img-wrap img.zoomed { transform: scale(2); cursor: zoom-out; }
+
+  .arch-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px; }
+  .arch-card {
+    border-radius: var(--radius-lg);
+    padding: 16px;
+    transition: var(--transition);
+  }
+  .arch-card-head { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+  .arch-card-name { font-size: 14px; font-weight: 700; color: var(--text-primary); }
+  .arch-card-count { font-family: var(--font-display); font-size: 26px; font-weight: 700; color: var(--teal); }
+  .arch-card-stat { font-size: 12px; color: var(--text-secondary); margin-top: 3px; }
+
+  .toast {
+    position: fixed;
+    bottom: 24px; right: 24px;
+    background: var(--surface-lift);
+    color: var(--text-primary);
+    border: 1px solid rgba(0,212,170,0.2);
+    padding: 12px 20px;
+    border-radius: var(--radius);
+    font-size: 14px;
+    font-weight: 600;
+    z-index: 9999;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(12px);
+    transition: opacity 0.25s, transform 0.25s;
+    box-shadow: var(--shadow-md);
+  }
+  .toast.show { opacity: 1; pointer-events: auto; transform: none; }
+
+  .info-section {
+    margin-bottom: 28px;
+    padding: 20px;
+    background: rgba(12,22,40,0.72);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+  }
+  .info-section h2 {
+    font-family: var(--font-display);
+    font-size: 20px;
+    color: var(--text-primary);
+    margin-bottom: 12px;
+    padding-bottom: 9px;
+    border-bottom: 1px solid var(--border);
+  }
+  .info-row { display: flex; align-items: flex-start; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 14px; }
+  .info-row:last-child { border-bottom: none; }
+  .info-key { font-weight: 600; color: var(--text-secondary); min-width: 220px; flex-shrink: 0; }
+  .info-val { color: var(--text-primary); }
+
+  ::-webkit-scrollbar { width: 8px; height: 8px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: rgba(123,143,175,0.28); border-radius: 999px; }
+  ::-webkit-scrollbar-thumb:hover { background: rgba(0,212,170,0.32); }
+
+  @media (max-width: 768px) {
+    .sidebar { transform: translateX(-100%); }
+    .main { margin-left: 0; }
+    .page { padding: 18px; }
+    .topbar { padding: 12px 16px; align-items: flex-start; flex-direction: column; }
+    .topbar-actions { width: 100%; }
+    .btn { flex: 1 1 auto; justify-content: center; }
+    .kpi-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+    .grid-2, .rank-grid { grid-template-columns: 1fr; }
+    .info-row { flex-direction: column; gap: 3px; }
+    .info-key { min-width: 0; }
+  }
+
+  @media (max-width: 520px) {
+    .kpi-grid { grid-template-columns: 1fr; }
+    .table-controls, .topbar-actions { flex-direction: column; align-items: stretch; }
+    .search-input, select.filter-select { width: 100%; min-width: 0; }
+  }
+
+  .val-pct { color: var(--teal); font-weight: 700; }
+  .sort-indicator { margin-left: 4px; font-size: 10px; }
+  .mb-20 { margin-bottom: 20px; }
+  .mb-28 { margin-bottom: 28px; }
+  .gap-16 { gap: 16px; }
+  .flex { display: flex; }
+  .flex-center { display: flex; align-items: center; justify-content: center; }
+  .flex-between { display: flex; align-items: center; justify-content: space-between; }
+</style>
+</head>
+<body>
+
+<div class="shell">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <span class="logo-label">Análise de Redes</span>
+      <div class="logo-title">EvoNet - Ploidia</div>
+      <div class="logo-sub">Classificação Binária</div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-section-label">Visão Geral</div>
+      <div class="nav-item active" data-page="home">Início
+      </div>
+      <div class="nav-section-label">Análise</div>
+
+      <div class="nav-item" data-page="compare">Teste vs Blind Test
+      </div>
+      <div class="nav-item" data-page="best">Melhores Resultados
+      </div>
+      <div class="nav-item" data-page="top10">Top 10 Redes
+      </div>
+      <div class="nav-section-label">Detalhe</div>
+
+      <div class="nav-item" data-page="confmat">Matriz de Confusão
+      </div>
+      <div class="nav-item" data-page="info">Informações do Projeto
+      </div>
+    </nav>
+    <div class="sidebar-footer">EvoNet - Ploidia © 2025</div>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="main">
+
+    <!-- TOPBAR -->
+    <header class="topbar">
+      <div class="topbar-title" id="topbar-title">Início</div>
+      <div class="topbar-actions">
+        <label class="btn btn-primary" style="cursor:pointer;">
+          <span>📂</span> Carregar Planilha Excel
+          <input type="file" id="file-input" accept=".xlsx,.xls" style="display:none">
+        </label>
+        <button class="btn btn-outline" onclick="exportToExcel()">📊 Excel</button>
+        <button class="btn btn-outline" onclick="exportToPDF()">📄 PDF</button>
+        <button class="btn btn-outline" onclick="downloadFilledDashboard()">Baixar preenchido</button>
+        <button class="btn btn-ghost" onclick="gerarRelatorio()">📝 Relatório</button>
+      </div>
+    </header>
+
+    <!-- PAGE: HOME -->
+    <div class="page active" id="page-home">
+      <div class="page-header">
+        <h1>Visão Geral</h1>
+        <p>Resumo executivo dos experimentos com redes MLP</p>
+      </div>
+
+      <div id="home-empty" class="empty-state" style="display: none;">
+        <div class="empty-icon">📂</div>
+        <strong>Nenhum dado carregado</strong>
+        <p>Clique em "Carregar Planilha Excel" para começar</p>
+      </div>
+
+      <div id="home-content" style="display: block;">
+        <!-- KPI Grid -->
+        <div class="kpi-grid" id="kpi-grid">
+    <div class="kpi-card ">
+      <div class="kpi-icon">🧠</div>
+      <div class="kpi-label">Quantidade de Redes Criadas</div>
+      <div class="kpi-value" style="font-size:22px">27.427</div>
+      <div class="kpi-sub">redes criadas no projeto</div>
+    </div>
+  
+    <div class="kpi-card highlight">
+      <div class="kpi-icon">🎯</div>
+      <div class="kpi-label">Melhor Acuracia Blind Test</div>
+      <div class="kpi-value" style="font-size:22px">66.18%</div>
+      
+    </div>
+  
+    <div class="kpi-card ">
+      <div class="kpi-icon">📈</div>
+      <div class="kpi-label">Média Acurácia Teste</div>
+      <div class="kpi-value" style="font-size:22px">61.42%</div>
+      <div class="kpi-sub">média geral</div>
+    </div>
+  
+    <div class="kpi-card ">
+      <div class="kpi-icon">🔬</div>
+      <div class="kpi-label">Média Acurácia Blind</div>
+      <div class="kpi-value" style="font-size:22px">63.97%</div>
+      <div class="kpi-sub">média geral</div>
+    </div>
+  
+    <div class="kpi-card highlight">
+      <div class="kpi-icon">🥇</div>
+      <div class="kpi-label">Melhor Rede</div>
+      <div class="kpi-value" style="font-size:16px">rede_2026-06-12_19-21-18</div>
+      
+    </div>
+  </div>
+
+        <!-- Dataset Info -->
+        <div class="grid-2 mb-28">
+          <div class="panel">
+            <div class="panel-header"><h3>📁 Banco de Dados</h3></div>
+            <div class="panel-body">
+              <div class="info-row"><span class="info-key">Amostras de Treinamento</span><span class="info-val"><strong>7.889</strong></span></div>
+              <div class="info-row"><span class="info-key">Amostras de Blind Test</span><span class="info-val"><strong>1.020</strong></span></div>
+              <div class="info-row"><span class="info-key">Variáveis de Entrada</span><span class="info-val"><strong>56</strong></span></div>
+              <div class="info-row"><span class="info-key">Tipo de Problema</span><span class="info-val">Classificação Binária (2 classes)</span></div>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="panel-header"><h3>🏆 Melhor Rede</h3></div>
+            <div class="panel-body" id="best-net-summary">
+    <div class="info-row"><span class="info-key">Nome</span><span class="info-val"><strong>rede_2026-06-12_19-21-18</strong></span></div>
+    <div class="info-row"><span class="info-key">Score</span><span class="info-val"><strong class="val-pct">F1</strong></span></div>
+    <div class="info-row"><span class="info-key">Acurácia Teste</span><span class="info-val"><strong class="val-pct">61.28%</strong></span></div>
+    <div class="info-row"><span class="info-key">Acurácia Blind</span><span class="info-val"><strong class="val-pct">66.18%</strong></span></div>
+    <div class="info-row"><span class="info-key">F1 C1 Teste</span><span class="info-val">60.96%</span></div>
+    <div class="info-row"><span class="info-key">F1 C2 Teste</span><span class="info-val">61.59%</span></div>
+  </div>
+          </div>
+        </div>
+
+        <!-- Quick chart -->
+        <div class="panel">
+          <div class="panel-header"><h3>📈 Distribuição de Acurácia — Teste vs Blind Test</h3></div>
+          <div class="panel-body">
+            <div class="chart-wrap"><canvas id="home-chart" width="801" height="340" style="display: block; box-sizing: border-box; height: 340px; width: 801px;"></canvas></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- PAGE: COMPARE -->
+    <div class="page" id="page-compare">
+      <div class="page-header">
+        <h1>Teste vs Blind Test</h1>
+        <p>Comparação lado a lado das métricas por rede</p>
+      </div>
+      <div class="grid-2 mb-20">
+        <div class="panel">
+          <div class="panel-header"><h3>Selecionar Redes</h3></div>
+          <div class="panel-body p0">
+            <div class="table-controls">
+              <input class="search-input" id="cmp-search" placeholder="🔍 Filtrar redes..." oninput="filterCompareList()" style="width:100%">
+            </div>
+            <div class="multi-select-wrap" id="cmp-net-list"></div>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="panel-header"><h3>Selecionar Métrica</h3></div>
+          <div class="panel-body">
+            <div class="tabs" id="cmp-metric-tabs"></div>
+          </div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-header"><h3 id="cmp-chart-title">Comparação de Métricas</h3></div>
+        <div class="panel-body">
+          <div class="chart-wrap"><canvas id="cmp-chart"></canvas></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PAGE: BEST -->
+    <div class="page" id="page-best">
+      <div class="page-header">
+        <h1>Melhores Resultados</h1>
+        <p>Top 3 por cada métrica</p>
+      </div>
+      <div class="rank-grid" id="best-rank-grid"></div>
+    </div>
+
+    <!-- PAGE: TOP10 -->
+    <div class="page" id="page-top10">
+      <div class="page-header">
+        <h1>Top 10 Redes</h1>
+        <p>As dez melhores redes por critério selecionado</p>
+      </div>
+      <div class="mb-20">
+        <div class="tabs" id="top10-tabs"></div>
+      </div>
+      <div class="grid-2">
+        <div class="panel">
+          <div class="panel-header"><h3>Tabela Top 10</h3></div>
+          <div class="table-wrap panel-body p0">
+            <table id="top10-table">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Nome da Rede</th>
+                  <th id="top10-metric-header">Valor</th>
+                </tr>
+              </thead>
+              <tbody id="top10-body"></tbody>
+            </table>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="panel-header"><h3>Acertos por Classe</h3></div>
+          <div class="panel-body">
+            <div class="chart-wrap"><canvas id="top10-chart"></canvas></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- PAGE: CONFUSION MATRIX -->
+    <div class="page" id="page-confmat">
+      <div class="page-header">
+        <h1>Matriz de Confusão</h1>
+        <p>Matriz de confusão da melhor rede encontrada</p>
+      </div>
+      <div class="panel">
+        <div class="panel-header">
+          <h3>Matriz de Confusão da Melhor Rede</h3>
+          <div style="display:flex;gap:8px;">
+            <label class="btn btn-primary btn-sm" style="cursor:pointer;">
+              📂 Carregar Imagem
+              <input type="file" id="conf-img-input" accept="image/png,image/jpeg,image/jpg" style="display:none">
+            </label>
+            <button class="btn btn-ghost btn-sm" onclick="downloadConfImg()">⬇️ Baixar</button>
+          </div>
+        </div>
+        <div class="panel-body">
+          <div id="conf-empty" class="empty-state" style="display: none;">
+            <div class="empty-icon">📊</div>
+            <strong>Nenhuma imagem carregada</strong>
+            <p>Clique em "Carregar Imagem" para exibir a matriz de confusão</p>
+          </div>
+          <div id="conf-content" style="display: block;">
+            <div class="conf-img-wrap" id="conf-img-wrap" onclick="toggleZoom()">
+              <img id="conf-img" src="blob:null/10572225-b978-485a-a9a2-6e973b023dfe" alt="Matriz de Confusão" data-url="blob:null/10572225-b978-485a-a9a2-6e973b023dfe" data-name="Blind_Test.png">
+            </div>
+            <p style="font-size:12px;color:var(--text-muted);margin-top:10px;text-align:center;">Clique na imagem para ampliar</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PAGE: INFO -->
+    <div class="page" id="page-info">
+      <div class="page-header">
+        <h1>Informações do Projeto</h1>
+        <p>Descrição do banco de dados e origem das variáveis</p>
+      </div>
+
+      <div class="info-section">
+        <h2>Banco de Dados</h2>
+        <div class="info-row"><span class="info-key">Variáveis de Entrada</span><span class="info-val">56 variáveis</span></div>
+        <div class="info-row"><span class="info-key">Amostras de Treinamento</span><span class="info-val">7.889 amostras</span></div>
+        <div class="info-row"><span class="info-key">Amostras de Blind Test</span><span class="info-val">1.020 amostras</span></div>
+        <div class="info-row"><span class="info-key">Tipo de Classificação</span><span class="info-val">Binária (Classe 1 e Classe 2)</span></div>
+        <div class="info-row"><span class="info-key">Tipo de Rede</span><span class="info-val">MLP — Multilayer Perceptron</span></div>
+      </div>
+
+      <div class="info-section">
+        <h2>Origem das Variáveis</h2>
+        <div class="info-row"><span class="info-key">Variáveis Morfológicas</span><span class="info-val">Características de forma e estrutura obtidas a partir de imagens</span></div>
+        <div class="info-row"><span class="info-key">Variáveis Morfocinéticas</span><span class="info-val">Características de dinâmica e movimento associadas às estruturas analisadas</span></div>
+        <div class="info-row"><span class="info-key">Dados Clínicos</span><span class="info-val">Informações clínicas da paciente incluídas como variáveis de entrada</span></div>
+      </div>
+
+      <div class="info-section">
+        <h2>Métricas Avaliadas</h2>
+        <div class="info-row"><span class="info-key">Acurácia</span><span class="info-val">Proporção total de acertos sobre o conjunto avaliado</span></div>
+        <div class="info-row"><span class="info-key">Recall (Sensibilidade)</span><span class="info-val">Taxa de verdadeiros positivos por classe</span></div>
+        <div class="info-row"><span class="info-key">Precision (Precisão)</span><span class="info-val">Proporção de predições positivas corretas por classe</span></div>
+        <div class="info-row"><span class="info-key">Specificity (Especificidade)</span><span class="info-val">Taxa de verdadeiros negativos por classe</span></div>
+        <div class="info-row"><span class="info-key">F1-Score</span><span class="info-val">Média harmônica entre Precision e Recall por classe</span></div>
+        <div class="info-row"><span class="info-key">Score</span><span class="info-val">Métrica composta de ordenação final das redes</span></div>
+      </div>
+    </div>
+
+  </div><!-- /main -->
+</div><!-- /shell -->
+
+<div class="toast" id="toast">✅ 17 redes carregadas com sucesso!</div>
+
+<script>
+// ==============================
+// STATE
+// ==============================
+let DATA = [];
+const EMBEDDED_DATA = [{"_idx":0,"Nome_Rede":"rede_2026-06-14_04-58-57","Score":"Specificity","Acuracia_Teste":61.369863013698634,"Acuracia_Blind":63.725490196078425,"Recall_C1_Teste":60.40515653775322,"Recall_C2_Teste":62.31884057971014,"Precision_C1_Teste":61.19402985074627,"Precision_C2_Teste":61.53846153846154,"Specificity_C1_Teste":62.31884057971014,"Specificity_C2_Teste":60.40515653775322,"F1_C1_Teste":60.7970342910102,"F1_C2_Teste":61.92619261926193,"Recall_C1_Blind":66.66666666666666,"Recall_C2_Blind":60.78431372549019,"Precision_C1_Blind":62.96296296296296,"Precision_C2_Blind":64.58333333333334,"Specificity_C1_Blind":60.78431372549019,"Specificity_C2_Blind":66.66666666666666,"F1_C1_Blind":64.76190476190474,"F1_C2_Blind":62.62626262626263},{"_idx":1,"Nome_Rede":"rede_2026-06-12_21-35-28","Score":"Specificity","Acuracia_Teste":61.826484018264836,"Acuracia_Blind":63.52941176470588,"Recall_C1_Teste":60.58931860036832,"Recall_C2_Teste":63.04347826086957,"Precision_C1_Teste":61.72607879924953,"Precision_C2_Teste":61.92170818505338,"Specificity_C1_Teste":63.04347826086957,"Specificity_C2_Teste":60.58931860036832,"F1_C1_Teste":61.152416356877325,"F1_C2_Teste":62.47755834829444,"Recall_C1_Blind":62.549019607843135,"Recall_C2_Blind":64.50980392156863,"Precision_C1_Blind":63.800000000000004,"Precision_C2_Blind":63.26923076923077,"Specificity_C1_Blind":64.50980392156863,"Specificity_C2_Blind":62.549019607843135,"F1_C1_Blind":63.16831683168318,"F1_C2_Blind":63.88349514563107},{"_idx":2,"Nome_Rede":"rede_2026-06-17_00-58-10","Score":"Specificity","Acuracia_Teste":61.55251141552511,"Acuracia_Blind":63.23529411764706,"Recall_C1_Teste":60.53130929791271,"Recall_C2_Teste":62.5,"Precision_C1_Teste":59.962406015037594,"Precision_C2_Teste":63.05506216696269,"Specificity_C1_Teste":62.5,"Specificity_C2_Teste":60.53130929791271,"F1_C1_Teste":60.24551463644948,"F1_C2_Teste":62.7763041556145,"Recall_C1_Blind":63.13725490196078,"Recall_C2_Blind":63.33333333333333,"Precision_C1_Blind":63.261296660117885,"Precision_C2_Blind":63.20939334637965,"Specificity_C1_Blind":63.33333333333333,"Specificity_C2_Blind":63.13725490196078,"F1_C1_Blind":63.19921491658489,"F1_C2_Blind":63.2713026444662},{"_idx":3,"Nome_Rede":"rede_2026-06-14_04-54-36","Score":"Specificity","Acuracia_Teste":61.00456621004567,"Acuracia_Blind":62.94117647058823,"Recall_C1_Teste":60.036832412523026,"Recall_C2_Teste":61.95652173913043,"Precision_C1_Teste":60.820895522388064,"Precision_C2_Teste":61.18067978533095,"Specificity_C1_Teste":61.95652173913043,"Specificity_C2_Teste":60.036832412523026,"F1_C1_Teste":60.42632066728453,"F1_C2_Teste":61.56615661566157,"Recall_C1_Blind":65.09803921568627,"Recall_C2_Blind":60.78431372549019,"Precision_C1_Blind":62.40601503759399,"Precision_C2_Blind":63.52459016393443,"Specificity_C1_Blind":60.78431372549019,"Specificity_C2_Blind":65.09803921568627,"F1_C1_Blind":63.72360844529751,"F1_C2_Blind":62.124248496993985},{"_idx":4,"Nome_Rede":"rede_2026-06-12_20-43-46","Score":"Recall","Acuracia_Teste":61.7351598173516,"Acuracia_Blind":64.80392156862746,"Recall_C1_Teste":61.32596685082873,"Recall_C2_Teste":62.13768115942029,"Precision_C1_Teste":61.43911439114391,"Precision_C2_Teste":62.0253164556962,"Specificity_C1_Teste":62.13768115942029,"Specificity_C2_Teste":61.32596685082873,"F1_C1_Teste":61.382488479262676,"F1_C2_Teste":62.0814479638009,"Recall_C1_Blind":64.50980392156863,"Recall_C2_Blind":65.09803921568627,"Precision_C1_Blind":64.89151873767258,"Precision_C2_Blind":64.71734892787524,"Specificity_C1_Blind":65.09803921568627,"Specificity_C2_Blind":64.50980392156863,"F1_C1_Blind":64.70009832841693,"F1_C2_Blind":64.90713587487781},{"_idx":5,"Nome_Rede":"rede_2026-06-13_17-16-59","Score":"Recall","Acuracia_Teste":61.917808219178085,"Acuracia_Blind":64.11764705882354,"Recall_C1_Teste":62.018348623853214,"Recall_C2_Teste":61.81818181818181,"Precision_C1_Teste":61.67883211678832,"Precision_C2_Teste":62.15722120658135,"Specificity_C1_Teste":61.81818181818181,"Specificity_C2_Teste":62.018348623853214,"F1_C1_Teste":61.848124428179325,"F1_C2_Teste":61.987237921604375,"Recall_C1_Blind":60.98039215686275,"Recall_C2_Blind":67.25490196078432,"Precision_C1_Blind":65.06276150627615,"Precision_C2_Blind":63.284132841328415,"Specificity_C1_Blind":67.25490196078432,"Specificity_C2_Blind":60.98039215686275,"F1_C1_Blind":62.955465587044536,"F1_C2_Blind":65.20912547528519},{"_idx":6,"Nome_Rede":"rede_2026-06-17_10-59-52","Score":"Recall","Acuracia_Teste":60.82191780821918,"Acuracia_Blind":64.11764705882354,"Recall_C1_Teste":60.036832412523026,"Recall_C2_Teste":61.59420289855072,"Precision_C1_Teste":60.594795539033456,"Precision_C2_Teste":61.04129263913825,"Specificity_C1_Teste":61.59420289855072,"Specificity_C2_Teste":60.036832412523026,"F1_C1_Teste":60.3145235892692,"F1_C2_Teste":61.31650135256989,"Recall_C1_Blind":63.33333333333333,"Recall_C2_Blind":64.90196078431373,"Precision_C1_Blind":64.34262948207171,"Precision_C2_Blind":63.899613899613904,"Specificity_C1_Blind":64.90196078431373,"Specificity_C2_Blind":63.33333333333333,"F1_C1_Blind":63.833992094861664,"F1_C2_Blind":64.39688715953308},{"_idx":7,"Nome_Rede":"rede_2026-06-17_02-18-56","Score":"Recall","Acuracia_Teste":60.91324200913242,"Acuracia_Blind":64.01960784313725,"Recall_C1_Teste":60.036832412523026,"Recall_C2_Teste":61.77536231884058,"Precision_C1_Teste":60.70763500931099,"Precision_C2_Teste":61.111111111111114,"Specificity_C1_Teste":61.77536231884058,"Specificity_C2_Teste":60.036832412523026,"F1_C1_Teste":60.37037037037038,"F1_C2_Teste":61.44144144144144,"Recall_C1_Blind":64.11764705882354,"Recall_C2_Blind":63.921568627450974,"Precision_C1_Blind":63.992172211350294,"Precision_C2_Blind":64.04715127701375,"Specificity_C1_Blind":63.921568627450974,"Specificity_C2_Blind":64.11764705882354,"F1_C1_Blind":64.05484818805094,"F1_C2_Blind":63.98429833169774},{"_idx":8,"Nome_Rede":"rede_2026-06-14_09-10-00","Score":"Precision","Acuracia_Teste":60.456621004566216,"Acuracia_Blind":63.627450980392155,"Recall_C1_Teste":60.036832412523026,"Recall_C2_Teste":60.86956521739131,"Precision_C1_Teste":60.147601476014756,"Precision_C2_Teste":60.75949367088608,"Specificity_C1_Teste":60.86956521739131,"Specificity_C2_Teste":60.036832412523026,"F1_C1_Teste":60.092165898617516,"F1_C2_Teste":60.814479638009054,"Recall_C1_Blind":63.921568627450974,"Recall_C2_Blind":63.33333333333333,"Precision_C1_Blind":63.547758284600384,"Precision_C2_Blind":63.70808678500987,"Specificity_C1_Blind":63.33333333333333,"Specificity_C2_Blind":63.921568627450974,"F1_C1_Blind":63.73411534701857,"F1_C2_Blind":63.52015732546706},{"_idx":9,"Nome_Rede":"rede_2026-06-24_10-00-49","Score":"Precision","Acuracia_Teste":61.55251141552511,"Acuracia_Blind":63.431372549019606,"Recall_C1_Teste":61.94852941176471,"Recall_C2_Teste":61.16152450090744,"Precision_C1_Teste":61.16152450090744,"Precision_C2_Teste":61.94852941176471,"Specificity_C1_Teste":61.16152450090744,"Specificity_C2_Teste":61.94852941176471,"F1_C1_Teste":61.55251141552512,"F1_C2_Teste":61.55251141552512,"Recall_C1_Blind":62.94117647058823,"Recall_C2_Blind":63.921568627450974,"Precision_C1_Blind":63.56435643564357,"Precision_C2_Blind":63.30097087378641,"Specificity_C1_Blind":63.921568627450974,"Specificity_C2_Blind":62.94117647058823,"F1_C1_Blind":63.251231527093594,"F1_C2_Blind":63.609756097560975},{"_idx":10,"Nome_Rede":"rede_2026-06-16_18-22-02","Score":"Precision","Acuracia_Teste":61.55251141552511,"Acuracia_Blind":63.33333333333333,"Recall_C1_Teste":60.58931860036832,"Recall_C2_Teste":62.5,"Precision_C1_Teste":61.38059701492538,"Precision_C2_Teste":61.71735241502684,"Specificity_C1_Teste":62.5,"Specificity_C2_Teste":60.58931860036832,"F1_C1_Teste":60.98239110287303,"F1_C2_Teste":62.106210621062104,"Recall_C1_Blind":61.372549019607845,"Recall_C2_Blind":65.29411764705883,"Precision_C1_Blind":63.87755102040816,"Precision_C2_Blind":62.83018867924528,"Specificity_C1_Blind":65.29411764705883,"Specificity_C2_Blind":61.372549019607845,"F1_C1_Blind":62.6,"F1_C2_Blind":64.03846153846153},{"_idx":11,"Nome_Rede":"rede_2026-06-16_18-22-35","Score":"Precision","Acuracia_Teste":61.18721461187214,"Acuracia_Blind":62.94117647058823,"Recall_C1_Teste":60.40515653775322,"Recall_C2_Teste":61.95652173913043,"Precision_C1_Teste":60.966542750929364,"Precision_C2_Teste":61.40035906642729,"Specificity_C1_Teste":61.95652173913043,"Specificity_C2_Teste":60.40515653775322,"F1_C1_Teste":60.6845513413506,"F1_C2_Teste":61.677186654643826,"Recall_C1_Blind":61.1764705882353,"Recall_C2_Blind":64.70588235294117,"Precision_C1_Blind":63.41463414634146,"Precision_C2_Blind":62.5,"Specificity_C1_Blind":64.70588235294117,"Specificity_C2_Blind":61.1764705882353,"F1_C1_Blind":62.275449101796404,"F1_C2_Blind":63.58381502890173},{"_idx":12,"Nome_Rede":"rede_2026-06-12_19-21-18","Score":"F1","Acuracia_Teste":61.278538812785385,"Acuracia_Blind":66.17647058823529,"Recall_C1_Teste":60.957642725598525,"Recall_C2_Teste":61.59420289855072,"Precision_C1_Teste":60.957642725598525,"Precision_C2_Teste":61.59420289855072,"Specificity_C1_Teste":61.59420289855072,"Specificity_C2_Teste":60.957642725598525,"F1_C1_Teste":60.957642725598525,"F1_C2_Teste":61.59420289855072,"Recall_C1_Blind":67.05882352941175,"Recall_C2_Blind":65.29411764705883,"Precision_C1_Blind":65.89595375722543,"Precision_C2_Blind":66.46706586826348,"Specificity_C1_Blind":65.29411764705883,"Specificity_C2_Blind":67.05882352941175,"F1_C1_Blind":66.47230320699707,"F1_C2_Blind":65.87537091988132},{"_idx":13,"Nome_Rede":"rede_2026-06-12_19-19-52","Score":"F1","Acuracia_Teste":60.91324200913242,"Acuracia_Blind":65.09803921568627,"Recall_C1_Teste":61.69429097605893,"Recall_C2_Teste":60.14492753623188,"Precision_C1_Teste":60.36036036036037,"Precision_C2_Teste":61.48148148148148,"Specificity_C1_Teste":60.14492753623188,"Specificity_C2_Teste":61.69429097605893,"F1_C1_Teste":61.0200364298725,"F1_C2_Teste":60.8058608058608,"Recall_C1_Blind":66.07843137254902,"Recall_C2_Blind":64.11764705882354,"Precision_C1_Blind":64.8076923076923,"Precision_C2_Blind":65.4,"Specificity_C1_Blind":64.11764705882354,"Specificity_C2_Blind":66.07843137254902,"F1_C1_Blind":65.43689320388349,"F1_C2_Blind":64.75247524752476},{"_idx":14,"Nome_Rede":"rede_2026-06-13_07-47-37","Score":"F1","Acuracia_Teste":62.648401826484026,"Acuracia_Blind":64.2156862745098,"Recall_C1_Teste":61.87845303867403,"Recall_C2_Teste":63.40579710144928,"Precision_C1_Teste":62.45353159851301,"Precision_C2_Teste":62.83662477558348,"Specificity_C1_Teste":63.40579710144928,"Specificity_C2_Teste":61.87845303867403,"F1_C1_Teste":62.16466234967622,"F1_C2_Teste":63.11992786293958,"Recall_C1_Blind":64.90196078431373,"Recall_C2_Blind":63.52941176470588,"Precision_C1_Blind":64.02321083172147,"Precision_C2_Blind":64.41351888667992,"Specificity_C1_Blind":63.52941176470588,"Specificity_C2_Blind":64.90196078431373,"F1_C1_Blind":64.45959104186953,"F1_C2_Blind":63.96841066140177},{"_idx":15,"Nome_Rede":"rede_2026-06-12_19-17-25","Score":"F1","Acuracia_Teste":61.00456621004567,"Acuracia_Blind":64.11764705882354,"Recall_C1_Teste":60.40515653775322,"Recall_C2_Teste":61.59420289855072,"Precision_C1_Teste":60.74074074074074,"Precision_C2_Teste":61.261261261261254,"Specificity_C1_Teste":61.59420289855072,"Specificity_C2_Teste":60.40515653775322,"F1_C1_Teste":60.5724838411819,"F1_C2_Teste":61.427280939476056,"Recall_C1_Blind":64.50980392156863,"Recall_C2_Blind":63.725490196078425,"Precision_C1_Blind":64.00778210116731,"Precision_C2_Blind":64.2292490118577,"Specificity_C1_Blind":63.725490196078425,"Specificity_C2_Blind":64.50980392156863,"F1_C1_Blind":64.2578125,"F1_C2_Blind":63.9763779527559},{"_idx":16,"Nome_Rede":"rede_2026-06-13_07-41-13","Score":"F1","Acuracia_Teste":62.465753424657535,"Acuracia_Blind":64.01960784313725,"Recall_C1_Teste":60.773480662983424,"Recall_C2_Teste":64.13043478260869,"Precision_C1_Teste":62.5,"Precision_C2_Teste":62.43386243386243,"Specificity_C1_Teste":64.13043478260869,"Specificity_C2_Teste":60.773480662983424,"F1_C1_Teste":61.624649859943986,"F1_C2_Teste":63.27077747989276,"Recall_C1_Blind":64.11764705882354,"Recall_C2_Blind":63.921568627450974,"Precision_C1_Blind":63.992172211350294,"Precision_C2_Blind":64.04715127701375,"Specificity_C1_Blind":63.921568627450974,"Specificity_C2_Blind":64.11764705882354,"F1_C1_Blind":64.05484818805094,"F1_C2_Blind":63.98429833169774}];
+const STORAGE_KEY = 'evonet_ploidia_dashboard_data';
+let rankSort = { col: 'Acuracia_Blind', dir: -1 };
+let rankPage = 1;
+const RANK_PER_PAGE = 20;
+let cmpSelectedNets = new Set();
+let cmpMetric = 'Acuracia';
+let top10Metric = 'Acuracia_Blind';
+
+// Chart instances
+let homeChart, cmpChart, top10Chart, archPieChart, archBarChart;
+
+// ==============================
+// METRICS CONFIG
+// ==============================
+const METRICS = [
+  { key: 'Acuracia_Teste',       label: 'Acurácia Teste',        group: 'Acuracia' },
+  { key: 'Acuracia_Blind',       label: 'Acurácia Blind',        group: 'Acuracia' },
+  { key: 'Recall_C1_Teste',      label: 'Recall C1 Teste',       group: 'Recall' },
+  { key: 'Recall_C2_Teste',      label: 'Recall C2 Teste',       group: 'Recall' },
+  { key: 'Recall_C1_Blind',      label: 'Recall C1 Blind',       group: 'Recall' },
+  { key: 'Recall_C2_Blind',      label: 'Recall C2 Blind',       group: 'Recall' },
+  { key: 'Precision_C1_Teste',   label: 'Precision C1 Teste',    group: 'Precision' },
+  { key: 'Precision_C2_Teste',   label: 'Precision C2 Teste',    group: 'Precision' },
+  { key: 'Precision_C1_Blind',   label: 'Precision C1 Blind',    group: 'Precision' },
+  { key: 'Precision_C2_Blind',   label: 'Precision C2 Blind',    group: 'Precision' },
+  { key: 'Specificity_C1_Teste', label: 'Specificity C1 Teste',  group: 'Specificity' },
+  { key: 'Specificity_C2_Teste', label: 'Specificity C2 Teste',  group: 'Specificity' },
+  { key: 'Specificity_C1_Blind', label: 'Specificity C1 Blind',  group: 'Specificity' },
+  { key: 'Specificity_C2_Blind', label: 'Specificity C2 Blind',  group: 'Specificity' },
+  { key: 'F1_C1_Teste',          label: 'F1 C1 Teste',           group: 'F1' },
+  { key: 'F1_C2_Teste',          label: 'F1 C2 Teste',           group: 'F1' },
+  { key: 'F1_C1_Blind',          label: 'F1 C1 Blind',           group: 'F1' },
+  { key: 'F1_C2_Blind',          label: 'F1 C2 Blind',           group: 'F1' },
+  { key: 'Score',                label: 'Score',                  group: 'Score' },
+];
+
+const BEST_METRICS = [
+  { key: 'Acuracia_Teste',       label: 'Melhor Acurácia Teste' },
+  { key: 'Acuracia_Blind',       label: 'Melhor Acurácia Blind' },
+  { key: 'Recall_C1_Teste',      label: 'Melhor Recall C1 Teste' },
+  { key: 'Recall_C2_Teste',      label: 'Melhor Recall C2 Teste' },
+  { key: 'Recall_C1_Blind',      label: 'Melhor Recall C1 Blind' },
+  { key: 'Recall_C2_Blind',      label: 'Melhor Recall C2 Blind' },
+  { key: 'Precision_C1_Teste',   label: 'Melhor Precision C1 Teste' },
+  { key: 'Precision_C2_Teste',   label: 'Melhor Precision C2 Teste' },
+  { key: 'Precision_C1_Blind',   label: 'Melhor Precision C1 Blind' },
+  { key: 'Precision_C2_Blind',   label: 'Melhor Precision C2 Blind' },
+  { key: 'Specificity_C1_Teste', label: 'Melhor Specificity C1 Teste' },
+  { key: 'Specificity_C2_Teste', label: 'Melhor Specificity C2 Teste' },
+  { key: 'Specificity_C1_Blind', label: 'Melhor Specificity C1 Blind' },
+  { key: 'Specificity_C2_Blind', label: 'Melhor Specificity C2 Blind' },
+  { key: 'F1_C1_Teste',          label: 'Melhor F1 C1 Teste' },
+  { key: 'F1_C2_Teste',          label: 'Melhor F1 C2 Teste' },
+  { key: 'F1_C1_Blind',          label: 'Melhor F1 C1 Blind' },
+  { key: 'F1_C2_Blind',          label: 'Melhor F1 C2 Blind' },
+  { key: 'Score',                label: 'Melhor Score' },
+];
+
+const CMP_METRIC_PAIRS = [
+  { key: 'Acuracia',    label: 'Acurácia',    teste: 'Acuracia_Teste',       blind: 'Acuracia_Blind' },
+  { key: 'Recall_C1',  label: 'Recall C1',   teste: 'Recall_C1_Teste',      blind: 'Recall_C1_Blind' },
+  { key: 'Recall_C2',  label: 'Recall C2',   teste: 'Recall_C2_Teste',      blind: 'Recall_C2_Blind' },
+  { key: 'Prec_C1',    label: 'Precision C1', teste: 'Precision_C1_Teste',  blind: 'Precision_C1_Blind' },
+  { key: 'Prec_C2',    label: 'Precision C2', teste: 'Precision_C2_Teste',  blind: 'Precision_C2_Blind' },
+  { key: 'Spec_C1',    label: 'Specificity C1', teste: 'Specificity_C1_Teste', blind: 'Specificity_C1_Blind' },
+  { key: 'Spec_C2',    label: 'Specificity C2', teste: 'Specificity_C2_Teste', blind: 'Specificity_C2_Blind' },
+  { key: 'F1_C1',      label: 'F1 C1',       teste: 'F1_C1_Teste',          blind: 'F1_C1_Blind' },
+  { key: 'F1_C2',      label: 'F1 C2',       teste: 'F1_C2_Teste',          blind: 'F1_C2_Blind' },
+];
+
+const TOP10_METRICS = [
+  { key: 'Acuracia_Blind', label: 'Acuracia Blind' },
+  { key: 'Acuracia_Teste', label: 'Acuracia Teste' },
+  { key: 'Recall_C1_Blind', label: 'Recall C1 Blind' },
+  { key: 'Recall_C2_Blind', label: 'Recall C2 Blind' },
+  { key: 'Recall_C1_Teste', label: 'Recall C1 Teste' },
+  { key: 'Recall_C2_Teste', label: 'Recall C2 Teste' },
+  { key: 'Precision_C1_Blind', label: 'Precision C1 Blind' },
+  { key: 'Precision_C2_Blind', label: 'Precision C2 Blind' },
+  { key: 'Precision_C1_Teste', label: 'Precision C1 Teste' },
+  { key: 'Precision_C2_Teste', label: 'Precision C2 Teste' },
+  { key: 'Specificity_C1_Blind', label: 'Specificity C1 Blind' },
+  { key: 'Specificity_C2_Blind', label: 'Specificity C2 Blind' },
+  { key: 'Specificity_C1_Teste', label: 'Specificity C1 Teste' },
+  { key: 'Specificity_C2_Teste', label: 'Specificity C2 Teste' },
+  { key: 'F1_C1_Blind', label: 'F1 C1 Blind' },
+  { key: 'F1_C2_Blind', label: 'F1 C2 Blind' },
+  { key: 'F1_C1_Teste', label: 'F1 C1 Teste' },
+  { key: 'F1_C2_Teste', label: 'F1 C2 Teste' },
+  { key: 'Score', label: 'Score' },
+];
+
+// ==============================
+// NAVIGATION
+// ==============================
+const PAGE_TITLES = {
+  home: 'Início',
+  compare: 'Teste vs Blind Test',
+  best: 'Melhores Resultados',
+  top10: 'Top 10 Redes',
+  confmat: 'Matriz de Confusão',
+  info: 'Informações do Projeto',
+};
+
+document.querySelectorAll('.nav-item').forEach(item => {
+  item.addEventListener('click', () => {
+    const p = item.dataset.page;
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    item.classList.add('active');
+    document.querySelectorAll('.page').forEach(pg => pg.classList.remove('active'));
+    document.getElementById('page-' + p).classList.add('active');
+    document.getElementById('topbar-title').textContent = PAGE_TITLES[p];
+    if (p === 'compare') renderCompare();
+    if (p === 'best') renderBest();
+    if (p === 'top10') renderTop10();
+  });
+});
+
+const METRIC_KEYS = new Set([
+  'Acuracia_Teste','Acuracia_Blind',
+  'Recall_C1_Teste','Recall_C2_Teste','Recall_C1_Blind','Recall_C2_Blind',
+  'Precision_C1_Teste','Precision_C2_Teste','Precision_C1_Blind','Precision_C2_Blind',
+  'Specificity_C1_Teste','Specificity_C2_Teste','Specificity_C1_Blind','Specificity_C2_Blind',
+  'F1_C1_Teste','F1_C2_Teste','F1_C1_Blind','F1_C2_Blind'
+]);
+
+function normalizeHeaderName(value) {
+  return String(value || '')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '');
+}
+
+function classSuffixFromHeader(norm) {
+  if (/(^|[^0-9])c1($|[^0-9])/.test(norm) || /classe1|class1|grupo1|_1$|1$/.test(norm)) return 'C1';
+  if (/(^|[^0-9])c2($|[^0-9])/.test(norm) || /classe2|class2|grupo2|_2$|2$/.test(norm)) return 'C2';
+  return '';
+}
+
+function splitFromHeader(norm) {
+  if (/blind|bt|validacao|validation/.test(norm)) return 'Blind';
+  if (/teste|test/.test(norm)) return 'Teste';
+  return '';
+}
+
+function canonicalHeader(rawKey) {
+  const norm = normalizeHeaderName(rawKey);
+  if (!norm) return rawKey;
+  if (/^(nomedarede|nomerede|rede|network|modelo|model)$/.test(norm)) return 'Nome_Rede';
+  if (norm === 'score' || norm === 'scores') return 'Score';
+  if (/^(bt|blind|blindtest|acuraciabt|accbt)$/.test(norm)) return 'Acuracia_Blind';
+  if (/^(teste|test|acuraciateste|accteste)$/.test(norm)) return 'Acuracia_Teste';
+
+  const split = splitFromHeader(norm);
+  const cls = classSuffixFromHeader(norm);
+  const suffix = cls && split ? `_${cls}_${split}` : '';
+
+  if (/^(acuracia|accuracy|acc)/.test(norm)) return split === 'Blind' ? 'Acuracia_Blind' : 'Acuracia_Teste';
+  if (/recall|sensibilidade|sensitivity/.test(norm) && suffix) return `Recall${suffix}`;
+  if (/precision|precisao|presicion|precison/.test(norm) && suffix) return `Precision${suffix}`;
+  if (/specificity|especificidade|specifity|specificidade/.test(norm) && suffix) return `Specificity${suffix}`;
+  if (/^f1|f1score|fscore/.test(norm) && suffix) return `F1${suffix}`;
+
+  return rawKey.trim ? rawKey.trim() : rawKey;
+}
+
+function parseCellValue(value) {
+  if (typeof value === 'number') return value;
+  if (value == null || value === '') return value;
+  const raw = String(value).trim();
+  if (!raw) return '';
+  const percent = raw.includes('%');
+  const normalized = raw
+    .replace(/%/g, '')
+    .replace(/\s/g, '')
+    .replace(/\.(?=\d{3}(\D|$))/g, '')
+    .replace(',', '.');
+  const parsed = Number(normalized);
+  if (!Number.isNaN(parsed)) return percent ? parsed / 100 : parsed;
+  return value;
+}
+
+function canonicalizeRow(row, i) {
+  const out = { _idx: i };
+  for (const rawKey in row) {
+    const key = canonicalHeader(rawKey);
+    const value = parseCellValue(row[rawKey]);
+    out[key] = value;
+  }
+  return out;
+}
+
+// ==============================
+// FILE LOADING
+// ==============================
+document.getElementById('file-input').addEventListener('change', function(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(ev) {
+    try {
+      const wb = XLSX.read(ev.target.result, { type: 'array' });
+      const ws = wb.Sheets[wb.SheetNames[0]];
+      const raw = XLSX.utils.sheet_to_json(ws);
+      DATA = raw.map((row, i) => canonicalizeRow(row, i));
+      persistDashboardData();
+      showToast('✅ ' + DATA.length + ' redes carregadas com sucesso!');
+      processData();
+    } catch(err) {
+      showToast('❌ Erro ao ler planilha: ' + err.message);
+    }
+  };
+  reader.readAsArrayBuffer(file);
+  e.target.value = '';
+});
+
+function processData() {
+  renderHome();
+}
+
+function persistDashboardData() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(DATA));
+  } catch (e) {}
+}
+
+function restoreDashboardData() {
+  let saved = Array.isArray(EMBEDDED_DATA) ? EMBEDDED_DATA : null;
+  if (!saved) {
+    try {
+      saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null');
+    } catch (e) {
+      saved = null;
+    }
+  }
+  if (Array.isArray(saved) && saved.length) {
+    DATA = saved.map((row, i) => ({ ...row, _idx: i }));
+    processData();
+    showToast('Dados carregados no dashboard.');
+  }
+}
+
+function downloadFilledDashboard() {
+  if (!DATA.length) { showToast('Nenhum dado carregado.'); return; }
+  const source = document.documentElement.outerHTML;
+  const embedded = 'const EMBEDDED_DATA = ' + JSON.stringify(DATA) + ';';
+  const filled = '<!DOCTYPE html>\n' + source.replace(/const EMBEDDED_DATA = [\s\S]*?;/, embedded);
+  const blob = new Blob([filled], { type: 'text/html;charset=utf-8' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'evonet_ploidia_preenchido.html';
+  a.click();
+  URL.revokeObjectURL(a.href);
+  showToast('Dashboard preenchido baixado.');
+}
+
+window.addEventListener('DOMContentLoaded', restoreDashboardData);
+
+// ==============================
+// HELPERS
+// ==============================
+function bestNet() {
+  if (!DATA.length) return null;
+  return DATA.reduce((a, b) => {
+    const btA = numVal(a, 'Acuracia_Blind');
+    const btB = numVal(b, 'Acuracia_Blind');
+    if (btB > btA) return b;
+    if (btB === btA && numVal(b, 'Acuracia_Teste') > numVal(a, 'Acuracia_Teste')) return b;
+    return a;
+  });
+}
+
+function fmt(v, decimals = 4) {
+  if (v == null || v === '') return '—';
+  const n = (typeof v === 'number') ? v : parseCellValue(v);
+  if (typeof n === 'number' && !Number.isNaN(n)) return Number(n).toFixed(decimals);
+  return String(v);
+}
+
+function displayMetric(row, key) {
+  if (key === 'Score') return fmt(row?.Score);
+  return pct(numVal(row, key));
+}
+
+function sortValue(row, key) {
+  if (key === 'Score') {
+    const raw = row?.Score;
+    const n = numVal(row, key);
+    return Number.isNaN(n) ? String(raw || '').toLowerCase() : n;
+  }
+  return numVal(row, key);
+}
+
+function compareMetricRows(a, b, key) {
+  const va = sortValue(a, key);
+  const vb = sortValue(b, key);
+  if (typeof va === 'string' || typeof vb === 'string') return String(vb).localeCompare(String(va));
+  if (Number.isNaN(va) && Number.isNaN(vb)) return 0;
+  if (Number.isNaN(va)) return 1;
+  if (Number.isNaN(vb)) return -1;
+  return vb - va;
+}
+
+function pct(v) {
+  if (v == null || isNaN(v)) return '—';
+  const val = Number(v);
+  // auto-detect if already 0-1 or 0-100
+  const display = val <= 1 ? (val * 100).toFixed(2) : val.toFixed(2);
+  return display + '%';
+}
+
+function numVal(row, key) {
+  const v = row?.[key];
+  let n = (typeof v === 'number') ? v : parseCellValue(v);
+  if (typeof n !== 'number' || Number.isNaN(n)) return NaN;
+  if (METRIC_KEYS.has(key) && Math.abs(n) > 1) n = n / 100;
+  return n;
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3200);
+}
+
+function destroyChart(c) {
+  if (c) { try { c.destroy(); } catch(e) {} }
+  return null;
+}
+
+const GREEN_COLORS = [
+  '#00D4AA','#00A8D4','#7C3AED','#A78BFA','#F59E0B','#F97316','#F87171',
+  '#38BDF8','#22C55E','#14B8A6','#8B5CF6','#EAB308','#FB7185','#60A5FA'
+];
+
+if (window.Chart) {
+  Chart.defaults.color = '#7B8FAF';
+  Chart.defaults.borderColor = 'rgba(255,255,255,0.06)';
+  Chart.defaults.font.family = "Inter, system-ui, sans-serif";
+}
+
+
+
+
+// ==============================
+// HOME
+// ==============================
+function renderHome() {
+  if (!DATA.length) return;
+  document.getElementById('home-empty').style.display = 'none';
+  document.getElementById('home-content').style.display = 'block';
+
+  const best = bestNet();
+  const avgTest = DATA.reduce((s, r) => s + numVal(r, 'Acuracia_Teste'), 0) / DATA.length;
+  const avgBlind = DATA.reduce((s, r) => s + numVal(r, 'Acuracia_Blind'), 0) / DATA.length;
+  const maxBlind = Math.max(...DATA.map(r => numVal(r, 'Acuracia_Blind')));
+
+  const kpis = [
+    { label: 'Quantidade de Redes Criadas', value: '27.427', sub: 'redes criadas no projeto', icon: '🧠' },
+    { label: 'Melhor Acuracia Blind Test', value: pct(maxBlind), sub: '', icon: '🎯', hl: true },
+    { label: 'Média Acurácia Teste', value: pct(avgTest), sub: 'média geral', icon: '📈' },
+    { label: 'Média Acurácia Blind', value: pct(avgBlind), sub: 'média geral', icon: '🔬' },
+    { label: 'Melhor Rede', value: best.Nome_Rede || '—', sub: '', icon: '🥇', hl: true },
+  ];
+
+  document.getElementById('kpi-grid').innerHTML = kpis.map(k => `
+    <div class="kpi-card ${k.hl ? 'highlight' : ''}">
+      <div class="kpi-icon">${k.icon}</div>
+      <div class="kpi-label">${k.label}</div>
+      <div class="kpi-value" style="font-size:${String(k.value).length > 12 ? '16px' : '22px'}">${k.value}</div>
+      ${k.sub ? `<div class="kpi-sub">${k.sub}</div>` : ''}
+    </div>
+  `).join('');
+
+  // Best net summary
+  document.getElementById('best-net-summary').innerHTML = `
+    <div class="info-row"><span class="info-key">Nome</span><span class="info-val"><strong>${best.Nome_Rede || '—'}</strong></span></div>
+    <div class="info-row"><span class="info-key">Score</span><span class="info-val"><strong class="val-pct">${displayMetric(best, 'Score')}</strong></span></div>
+    <div class="info-row"><span class="info-key">Acurácia Teste</span><span class="info-val"><strong class="val-pct">${pct(numVal(best,'Acuracia_Teste'))}</strong></span></div>
+    <div class="info-row"><span class="info-key">Acurácia Blind</span><span class="info-val"><strong class="val-pct">${pct(numVal(best,'Acuracia_Blind'))}</strong></span></div>
+    <div class="info-row"><span class="info-key">F1 C1 Teste</span><span class="info-val">${pct(numVal(best,'F1_C1_Teste'))}</span></div>
+    <div class="info-row"><span class="info-key">F1 C2 Teste</span><span class="info-val">${pct(numVal(best,'F1_C2_Teste'))}</span></div>
+  `;
+
+  // Home chart: scatter of all nets by accuracy
+  homeChart = destroyChart(homeChart);
+  const sorted = [...DATA].sort((a,b) => numVal(a,'Acuracia_Blind') - numVal(b,'Acuracia_Blind'));
+  const labels = sorted.map(r => r.Nome_Rede || ('Rede ' + r._idx));
+  homeChart = new Chart(document.getElementById('home-chart').getContext('2d'), {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [
+        { label: 'Acurácia Teste', data: sorted.map(r => numVal(r,'Acuracia_Teste')), borderColor: '#00D4AA', backgroundColor: 'rgba(0,212,170,0.10)', tension: 0.3, pointRadius: 2, fill: true },
+        { label: 'Acurácia Blind', data: sorted.map(r => numVal(r,'Acuracia_Blind')), borderColor: '#00A8D4', backgroundColor: 'rgba(0,168,212,0.10)', tension: 0.3, pointRadius: 2, borderDash: [4,3], fill: false },
+      ]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { position: 'bottom' } },
+      scales: {
+        y: { min: 0, max: 1, ticks: { callback: v => (v*100).toFixed(0) + '%' }, grid: { color: 'rgba(255,255,255,0.06)' } },
+        x: { display: false }
+      }
+    }
+  });
+}
+
+// ==============================
+// RANKING
+// ==============================
+function getFilteredRanking() {
+  const search = (document.getElementById('rank-search')?.value || '').toLowerCase();
+  return DATA
+    .filter(r => {
+      const name = (r.Nome_Rede || '').toLowerCase();
+      return !search || name.includes(search);
+    })
+    .sort((a, b) => {
+      const col = rankSort.col;
+      let va = col === '_rank' ? numVal(a, 'Score') : (typeof a[col] === 'number' ? a[col] : 0);
+      let vb = col === '_rank' ? numVal(b, 'Score') : (typeof b[col] === 'number' ? b[col] : 0);
+      if (typeof va === 'string') va = va.localeCompare(vb);
+      return rankSort.dir * (vb - va);
+    });
+}
+
+function renderRankingTable() {
+  if (!DATA.length) return;
+  const filtered = getFilteredRanking();
+  const totalPages = Math.ceil(filtered.length / RANK_PER_PAGE);
+  if (rankPage > totalPages) rankPage = 1;
+  const slice = filtered.slice((rankPage - 1) * RANK_PER_PAGE, rankPage * RANK_PER_PAGE);
+  const best = bestNet();
+
+  document.getElementById('rank-count').textContent = `${filtered.length} redes`;
+
+  const body = document.getElementById('rank-body');
+  body.innerHTML = slice.map((r, i) => {
+    const globalRank = (rankPage - 1) * RANK_PER_PAGE + i + 1;
+    const isBest = r.Nome_Rede === best?.Nome_Rede;
+    return `<tr class="${isBest ? 'best-row' : ''}">
+      <td>${isBest ? '<span class="badge badge-gold">🥇 #1</span>' : globalRank}</td>
+      <td><strong>${r.Nome_Rede || '—'}</strong>${isBest ? ' <span class="chip">Melhor</span>' : ''}</td>
+      <td class="val-pct">${displayMetric(r, 'Score')}</td>
+      <td class="val-pct">${pct(numVal(r,'Acuracia_Teste'))}</td>
+      <td class="val-pct">${pct(numVal(r,'Acuracia_Blind'))}</td>
+    </tr>`;
+  }).join('');
+
+  // Pagination
+  const pag = document.getElementById('rank-pagination');
+  if (totalPages <= 1) { pag.innerHTML = ''; return; }
+  let html = `<button class="page-btn" onclick="goRankPage(${rankPage-1})" ${rankPage===1?'disabled':''}>‹</button>`;
+  for (let p = 1; p <= totalPages; p++) {
+    if (p === 1 || p === totalPages || Math.abs(p - rankPage) <= 2)
+      html += `<button class="page-btn ${p===rankPage?'active':''}" onclick="goRankPage(${p})">${p}</button>`;
+    else if (Math.abs(p - rankPage) === 3)
+      html += `<span style="color:var(--text-muted);padding:0 4px">…</span>`;
+  }
+  html += `<button class="page-btn" onclick="goRankPage(${rankPage+1})" ${rankPage===totalPages?'disabled':''}>›</button>`;
+  pag.innerHTML = html;
+}
+
+function goRankPage(p) { rankPage = p; renderRankingTable(); }
+
+function sortRanking(col) {
+  if (rankSort.col === col) rankSort.dir *= -1;
+  else { rankSort.col = col; rankSort.dir = -1; }
+  rankPage = 1;
+}
+
+function filterRanking() { rankPage = 1; renderRankingTable(); }
+
+// ==============================
+// COMPARE
+// ==============================
+function renderCompare() {
+  if (!DATA.length) return;
+  buildCompareNetList();
+  buildCmpTabs();
+  renderCmpChart();
+}
+
+function filterCompareList() {
+  const q = (document.getElementById('cmp-search')?.value || '').toLowerCase();
+  document.querySelectorAll('.multi-select-item').forEach(item => {
+    item.style.display = item.dataset.name.toLowerCase().includes(q) ? '' : 'none';
+  });
+}
+
+function buildCompareNetList() {
+  const list = document.getElementById('cmp-net-list');
+  if (!DATA.length) { list.innerHTML = '<div class="empty-state" style="padding:30px"><p>Carregue uma planilha primeiro.</p></div>'; return; }
+  list.innerHTML = DATA.map(r => `
+    <div class="multi-select-item ${cmpSelectedNets.has(r.Nome_Rede) ? 'selected' : ''}"
+         data-name="${r.Nome_Rede || ''}"
+         onclick="toggleCmpNet('${(r.Nome_Rede||'').replace(/'/g,"\\'")}', this)">
+      <input type="checkbox" ${cmpSelectedNets.has(r.Nome_Rede) ? 'checked' : ''} onclick="event.stopPropagation()">
+      <span>${r.Nome_Rede || '—'}</span>
+    </div>
+  `).join('');
+}
+
+function toggleCmpNet(name, el) {
+  if (cmpSelectedNets.has(name)) cmpSelectedNets.delete(name);
+  else cmpSelectedNets.add(name);
+  el.classList.toggle('selected');
+  el.querySelector('input').checked = cmpSelectedNets.has(name);
+  renderCmpChart();
+}
+
+function buildCmpTabs() {
+  const tabs = document.getElementById('cmp-metric-tabs');
+  tabs.innerHTML = CMP_METRIC_PAIRS.map(m => `
+    <button class="tab-btn ${cmpMetric === m.key ? 'active' : ''}" onclick="setCmpMetric('${m.key}')">${m.label}</button>
+  `).join('');
+}
+
+function setCmpMetric(key) {
+  cmpMetric = key;
+  buildCmpTabs();
+  renderCmpChart();
+}
+
+function renderCmpChart() {
+  cmpChart = destroyChart(cmpChart);
+  const pair = CMP_METRIC_PAIRS.find(m => m.key === cmpMetric);
+  if (!pair) return;
+
+  const nets = cmpSelectedNets.size ? DATA.filter(r => cmpSelectedNets.has(r.Nome_Rede)) : DATA.slice(0, 8);
+  const labels = nets.map(r => r.Nome_Rede || '—');
+
+  document.getElementById('cmp-chart-title').textContent = `Comparação: ${pair.label} — Teste vs Blind Test`;
+
+  cmpChart = new Chart(document.getElementById('cmp-chart').getContext('2d'), {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [
+        { label: 'Teste', data: nets.map(r => numVal(r, pair.teste)), backgroundColor: '#00D4AA', borderRadius: 4 },
+        { label: 'Blind Test', data: nets.map(r => numVal(r, pair.blind)), backgroundColor: '#A78BFA', borderRadius: 4 },
+      ]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { position: 'bottom' } },
+      scales: {
+        y: { min: 0, max: 1, ticks: { callback: v => (v*100).toFixed(0)+'%' }, grid: { color: 'rgba(255,255,255,0.06)' } },
+        x: { ticks: { maxRotation: 45 } }
+      }
+    }
+  });
+}
+
+// ==============================
+// BEST RESULTS
+// ==============================
+function renderBest() {
+  if (!DATA.length) { document.getElementById('best-rank-grid').innerHTML = '<div class="empty-state"><div class="empty-icon">📂</div><strong>Carregue uma planilha primeiro.</strong></div>'; return; }
+
+  const grid = document.getElementById('best-rank-grid');
+  grid.innerHTML = BEST_METRICS.map(m => {
+    const sorted = [...DATA].sort((a,b) => compareMetricRows(a, b, m.key));
+    const top3 = sorted.slice(0, 3);
+    const posClass = (i) => ['rank-pos-1','rank-pos-2','rank-pos-3'][i] || 'rank-pos-n';
+    const posLabel = (i) => ['🥇','🥈','🥉'][i] || (i+1);
+    return `
+      <div class="rank-card">
+        <div class="rank-card-title">${m.label}</div>
+        ${top3.map((r, i) => `
+          <div class="rank-entry">
+            <div class="rank-pos ${posClass(i)}">${posLabel(i)}</div>
+            <div class="rank-info">
+              <div class="rank-name">${r.Nome_Rede || '—'}</div>
+            </div>
+            <div class="rank-value">${displayMetric(r, m.key)}</div>
+          </div>
+        `).join('')}
+      </div>
+    `;
+  }).join('');
+}
+
+// ==============================
+// TOP 10
+// ==============================
+function renderTop10() {
+  if (!DATA.length) return;
+  buildTop10Tabs();
+  renderTop10Content();
+}
+
+function buildTop10Tabs() {
+  document.getElementById('top10-tabs').innerHTML = TOP10_METRICS.map(m => `
+    <button class="tab-btn ${top10Metric === m.key ? 'active' : ''}" onclick="setTop10Metric('${m.key}')">${m.label}</button>
+  `).join('');
+}
+
+function setTop10Metric(key) {
+  top10Metric = key;
+  buildTop10Tabs();
+  renderTop10Content();
+}
+
+function renderTop10Content() {
+  const metaLabel = TOP10_METRICS.find(m => m.key === top10Metric)?.label || top10Metric;
+  const top10 = [...DATA].sort((a,b) => compareMetricRows(a, b, top10Metric)).slice(0,10);
+
+  document.getElementById('top10-metric-header').textContent = metaLabel;
+  document.getElementById('top10-body').innerHTML = top10.map((r, i) => `
+    <tr ${i===0?'class="best-row"':''}>
+      <td>${i===0?'🥇':i+1}</td>
+      <td><strong>${r.Nome_Rede || '—'}</strong></td>
+      <td class="val-pct">${displayMetric(r, top10Metric)}</td>
+    </tr>
+  `).join('');
+
+  top10Chart = destroyChart(top10Chart);
+  top10Chart = new Chart(document.getElementById('top10-chart').getContext('2d'), {
+    type: 'bar',
+    data: {
+      labels: top10.map(r => r.Nome_Rede || '—'),
+      datasets: [{
+        label: metaLabel,
+        data: top10.map(r => top10Metric === 'Score' ? 0 : numVal(r, top10Metric)),
+        backgroundColor: top10.map((_, i) => i === 0 ? '#00D4AA' : GREEN_COLORS[i % GREEN_COLORS.length]),
+        borderRadius: 5,
+      }]
+    },
+    options: {
+      indexAxis: 'y',
+      responsive: true,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { min: 0, max: 1, ticks: { callback: v => (v*100).toFixed(0)+'%' }, grid: { color: 'rgba(255,255,255,0.06)' } },
+        y: { ticks: { font: { size: 11 } } }
+      }
+    }
+  });
+}
+
+
+// ==============================
+// CONFUSION MATRIX
+// ==============================
+document.getElementById('conf-img-input').addEventListener('change', function(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const url = URL.createObjectURL(file);
+  document.getElementById('conf-img').src = url;
+  document.getElementById('conf-img').dataset.url = url;
+  document.getElementById('conf-img').dataset.name = file.name;
+  document.getElementById('conf-empty').style.display = 'none';
+  document.getElementById('conf-content').style.display = 'block';
+  e.target.value = '';
+});
+
+function toggleZoom() {
+  document.getElementById('conf-img').classList.toggle('zoomed');
+}
+
+function downloadConfImg() {
+  const img = document.getElementById('conf-img');
+  if (!img.src || img.src === window.location.href) { showToast('⚠️ Nenhuma imagem carregada.'); return; }
+  const a = document.createElement('a');
+  a.href = img.src;
+  a.download = img.dataset.name || 'matriz_confusao.png';
+  a.click();
+}
+
+// ==============================
+// EXPORT
+// ==============================
+function exportToExcel() {
+  if (!DATA.length) { showToast('⚠️ Nenhum dado carregado.'); return; }
+  const ws = XLSX.utils.json_to_sheet(DATA.map(r => {
+    const out = {};
+    for (const k in r) if (!k.startsWith('_')) out[k] = r[k];
+    return out;
+  }));
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Resultados');
+
+  // Top 10 sheet
+  const top10 = [...DATA].sort((a,b) => numVal(b,'Acuracia_Blind') - numVal(a,'Acuracia_Blind')).slice(0,10);
+  const ws2 = XLSX.utils.json_to_sheet(top10.map(r => ({ Nome_Rede: r.Nome_Rede, Score: r.Score, Acuracia_Teste: r.Acuracia_Teste, Acuracia_Blind: r.Acuracia_Blind })));
+  XLSX.utils.book_append_sheet(wb, ws2, 'Top 10');
+
+  XLSX.writeFile(wb, 'evonet_ploidia_resultados.xlsx');
+  showToast('✅ Excel exportado com sucesso!');
+}
+
+function exportToPDF() {
+  showToast('📄 Gerando PDF…');
+  const { jsPDF } = window.jspdf;
+  html2canvas(document.querySelector('.page.active'), { scale: 1.2, useCORS: true }).then(canvas => {
+    const imgData = canvas.toDataURL('image/png');
+    const pdf = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
+    const w = pdf.internal.pageSize.getWidth();
+    const h = (canvas.height * w) / canvas.width;
+    pdf.addImage(imgData, 'PNG', 0, 0, w, Math.min(h, 200));
+    pdf.save('evonet_ploidia.pdf');
+    showToast('✅ PDF gerado com sucesso!');
+  });
+}
+
+function gerarRelatorio() {
+  if (!DATA.length) { showToast('⚠️ Nenhum dado carregado.'); return; }
+  const best = bestNet();
+  const avgTest = DATA.reduce((s, r) => s + numVal(r, 'Acuracia_Teste'), 0) / DATA.length;
+  const avgBlind = DATA.reduce((s, r) => s + numVal(r, 'Acuracia_Blind'), 0) / DATA.length;
+  const top10 = [...DATA].sort((a,b) => numVal(b,'Acuracia_Blind') - numVal(a,'Acuracia_Blind')).slice(0,10);
+
+  const { jsPDF } = window.jspdf;
+  const pdf = new jsPDF({ unit: 'mm', format: 'a4' });
+  let y = 20;
+  const lw = 170;
+
+  const line = (text, indent = 0, bold = false) => {
+    pdf.setFont('helvetica', bold ? 'bold' : 'normal');
+    pdf.text(text, 20 + indent, y);
+    y += 7;
+    if (y > 270) { pdf.addPage(); y = 20; }
+  };
+
+  pdf.setFontSize(18); pdf.setFont('helvetica', 'bold');
+  pdf.text('Relatório — EvoNet - Ploidia', 20, y); y += 10;
+
+  pdf.setFontSize(11); pdf.setFont('helvetica', 'normal');
+  line(`Gerado em: ${new Date().toLocaleDateString('pt-BR')} ${new Date().toLocaleTimeString('pt-BR')}`);
+  y += 4;
+
+  pdf.setFontSize(14); line('1. Melhor Rede Encontrada', 0, true);
+  pdf.setFontSize(11);
+  line(`Nome: ${best.Nome_Rede || '—'}`, 4);
+  line(`Score: ${displayMetric(best, 'Score')}`, 4);
+  line(`Acurácia Teste: ${pct(numVal(best,'Acuracia_Teste'))}`, 4);
+  line(`Acurácia Blind: ${pct(numVal(best,'Acuracia_Blind'))}`, 4);
+  line(`F1 C1 Teste: ${pct(numVal(best,'F1_C1_Teste'))}`, 4);
+  line(`F1 C2 Teste: ${pct(numVal(best,'F1_C2_Teste'))}`, 4);
+  y += 4;
+
+  pdf.setFontSize(14); line('2. Estatísticas Gerais', 0, true);
+  pdf.setFontSize(11);
+  line('Quantidade de redes criadas: 27.427', 4);
+  line(`Média Acurácia Teste: ${pct(avgTest)}`, 4);
+  line(`Média Acurácia Blind: ${pct(avgBlind)}`, 4);
+  y += 4;
+
+  pdf.setFontSize(14); line('3. Top 10 Redes (por Blind Test)', 0, true);
+  pdf.setFontSize(11);
+  top10.forEach((r, i) => {
+    line(`${i+1}. ${r.Nome_Rede} — Acc Blind: ${pct(numVal(r,'Acuracia_Blind'))}`, 4);
+  });
+  y += 4;
+
+  pdf.setFontSize(14); line('4. Banco de Dados', 0, true);
+  pdf.setFontSize(11);
+  line('Variáveis de Entrada: 56', 4);
+  line('Amostras de Treinamento: 7.889', 4);
+  line('Amostras de Blind Test: 1.020', 4);
+
+  pdf.save('relatorio_evonet_ploidia.pdf');
+  showToast('✅ Relatório gerado com sucesso!');
+}
+</script>
+
+
+</body><div id="codex-browser-sidebar-comments-root" style="position: fixed; inset: 0px; pointer-events: none; z-index: 2147483647;"></div></html>

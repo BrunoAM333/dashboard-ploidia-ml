@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Resultados de Ploidia · Dashboard Consolidado</title>
+<style>
+:root {
+  --bg:#060B18; --card:#0C1628; --lift:#101E38; --deep:#08101F;
+  --teal:#00D4AA; --cyan:#00A8D4; --violet:#A78BFA; --gold:#F59E0B;
+  --red:#EF4444; --text:#DDE6F5; --muted:#7B8FAF; --dim:#3A4E6E;
+  --line:rgba(255,255,255,.07); --glow:rgba(0,212,170,.18);
+}
+*{box-sizing:border-box} body{margin:0;background:radial-gradient(circle at top left,rgba(0,212,170,.13),transparent 34%),var(--bg);color:var(--text);font:14px/1.65 Inter,Segoe UI,Arial,sans-serif}
+nav{position:sticky;top:0;z-index:5;height:54px;display:flex;align-items:center;justify-content:space-between;padding:0 38px;background:rgba(6,11,24,.88);backdrop-filter:blur(18px);border-bottom:1px solid var(--line)}
+.brand{font:600 11px Consolas,monospace;letter-spacing:.18em;text-transform:uppercase;color:var(--teal)} .nav a{color:var(--muted);text-decoration:none;margin-left:22px;font-size:12px} .nav a:hover{color:var(--teal)}
+.hero{padding:78px 38px 54px;position:relative;overflow:hidden} .hero::after{content:"";position:absolute;inset:auto 0 0;height:120px;background:linear-gradient(transparent,var(--bg))}
+.hero-inner{position:relative;z-index:1;max-width:1180px;margin:auto;display:grid;grid-template-columns:1fr 280px;gap:44px;align-items:center}
+.eyebrow{font:600 10px Consolas,monospace;letter-spacing:.2em;text-transform:uppercase;color:var(--teal);margin-bottom:18px} h1{font:700 clamp(32px,4.8vw,56px)/1.05 'Space Grotesk',Segoe UI,sans-serif;margin:0 0 18px} h1 em{font-style:normal;background:linear-gradient(120deg,var(--teal),var(--cyan),var(--violet));-webkit-background-clip:text;color:transparent}
+.sub{max-width:670px;color:var(--muted);font-size:15px} .tags{display:flex;flex-wrap:wrap;gap:8px;margin-top:22px} .tag{font:600 10px Consolas,monospace;letter-spacing:.06em;border:1px solid rgba(0,212,170,.16);background:rgba(0,212,170,.08);color:var(--teal);border-radius:99px;padding:5px 10px} .tag.v{border-color:rgba(167,139,250,.25);background:rgba(167,139,250,.1);color:var(--violet)}
+.auc-card{background:linear-gradient(180deg,var(--card),var(--deep));border:1px solid rgba(0,212,170,.18);border-radius:22px;padding:28px;box-shadow:0 0 55px var(--glow)} .auc-label{font:600 10px Consolas,monospace;color:var(--teal);letter-spacing:.16em;text-transform:uppercase} .auc{font:500 58px Consolas,monospace;line-height:1;margin:10px 0;color:#fff} .auc span{font-size:23px;color:var(--teal)} .auc-card small{display:block;color:var(--muted)} .prog{height:8px;background:#14213a;border-radius:99px;overflow:hidden;margin-top:20px} .prog i{display:block;height:100%;background:linear-gradient(90deg,var(--teal),var(--violet));width:69.4%}
+main{max-width:1180px;margin:auto;padding:20px 38px 70px} section{margin:44px 0} .section-head{display:flex;justify-content:space-between;align-items:end;gap:20px;margin-bottom:18px} h2{font:700 26px 'Space Grotesk',Segoe UI,sans-serif;margin:0} .note{color:var(--muted);max-width:700px}
+.kpis,.methods{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px} .kpi,.method-card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px} .kpi span,.method-card span{display:block;color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.06em} .kpi strong,.method-card strong{display:block;font:600 30px Consolas,monospace;margin:7px 0;color:#fff} .method-card strong{font-size:24px;color:var(--teal)} .kpi small,.method-card small{color:var(--muted)}
+.panel{background:rgba(12,22,40,.78);border:1px solid var(--line);border-radius:18px;overflow:hidden} table{width:100%;border-collapse:collapse} th,td{padding:12px 14px;border-bottom:1px solid var(--line);vertical-align:middle} th{text-align:left;color:var(--muted);font:600 11px Consolas,monospace;text-transform:uppercase;letter-spacing:.08em;background:rgba(255,255,255,.025)} td small{display:block;color:var(--muted);margin-top:2px} .mono{font-family:Consolas,monospace;color:var(--teal)} .bar{height:8px;background:#14213a;border-radius:20px;overflow:hidden;min-width:86px} .bar i{display:block;height:100%;background:linear-gradient(90deg,var(--teal),var(--cyan),var(--violet))}
+.grid2{display:grid;grid-template-columns:1.05fr .95fr;gap:18px} .callout{background:linear-gradient(135deg,rgba(0,212,170,.1),rgba(167,139,250,.08));border:1px solid rgba(0,212,170,.15);border-radius:18px;padding:20px} .callout h3{margin:0 0 10px;font-size:18px} .callout p{color:var(--muted);margin:8px 0} .visual-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:18px}.visual-card{background:linear-gradient(180deg,var(--card),var(--deep));border:1px solid var(--line);border-radius:18px;padding:18px;box-shadow:0 0 34px rgba(0,168,212,.08)}.visual-card h3{margin:0 0 6px;font-size:18px}.visual-card p{margin:0 0 14px;color:var(--muted)}.visual-card img{display:block;width:100%;border-radius:14px;border:1px solid rgba(255,255,255,.1);background:#fff}.metric-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin:14px 0}.metric-pill{background:rgba(0,212,170,.08);border:1px solid rgba(0,212,170,.14);border-radius:14px;padding:11px}.metric-pill span{display:block;color:var(--muted);font:600 10px Consolas,monospace;text-transform:uppercase;letter-spacing:.08em}.metric-pill strong{display:block;color:#fff;font:600 21px Consolas,monospace;margin-top:4px}.image-wide{margin-top:18px}.image-wide img{width:100%;border-radius:18px;border:1px solid rgba(255,255,255,.1);background:#fff}.cm-tech{margin:16px 0;padding:16px;background:var(--lift);border:1px solid rgba(0,168,212,.16);border-radius:16px}.cm-tech-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid var(--line)}.cm-tech-title{font:600 13px 'Space Grotesk',Segoe UI,sans-serif;color:var(--text)}.cm-tech-sub{font-size:11px;color:var(--muted);margin-top:2px}.cm-tech-badge{font:600 11px Consolas,monospace;color:var(--cyan);background:rgba(0,168,212,.1);border:1px solid rgba(0,168,212,.28);border-radius:99px;padding:5px 12px;white-space:nowrap}.cm-tech-body{display:grid;grid-template-columns:1fr 210px;gap:18px;align-items:start}.cm-matrix{display:grid;grid-template-columns:86px 1fr 1fr;grid-template-rows:30px 1fr 1fr;gap:6px}.cm-axis-top{display:flex;align-items:center;justify-content:center;font:700 9px Consolas,monospace;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);background:var(--deep);border-radius:7px;padding:0 8px}.cm-axis-left{display:flex;align-items:center;justify-content:flex-end;padding-right:10px;text-align:right;font:700 9px Consolas,monospace;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);line-height:1.35}.cm-cell{border-radius:11px;padding:14px 16px;display:flex;flex-direction:column;gap:3px;min-height:106px}.cm-cell-tag{font:800 9px Consolas,monospace;letter-spacing:.12em;text-transform:uppercase}.cm-cell-count{font:700 30px Consolas,monospace;line-height:1}.cm-cell-pct{font:600 11px Consolas,monospace}.cm-cell-desc{font-size:10px;color:var(--muted);line-height:1.35;margin-top:4px}.cm-cell.tp{background:rgba(0,168,212,.11);border:1.5px solid rgba(0,168,212,.28)}.cm-cell.tp .cm-cell-tag,.cm-cell.tp .cm-cell-count{color:var(--cyan)}.cm-cell.tp .cm-cell-pct{color:rgba(0,168,212,.78)}.cm-cell.fn{background:rgba(239,68,68,.08);border:1.5px solid rgba(239,68,68,.24)}.cm-cell.fn .cm-cell-tag,.cm-cell.fn .cm-cell-count{color:var(--red)}.cm-cell.fn .cm-cell-pct{color:rgba(239,68,68,.76)}.cm-cell.fp{background:rgba(245,158,11,.08);border:1.5px solid rgba(245,158,11,.24)}.cm-cell.fp .cm-cell-tag,.cm-cell.fp .cm-cell-count{color:var(--gold)}.cm-cell.fp .cm-cell-pct{color:rgba(245,158,11,.78)}.cm-cell.tn{background:rgba(167,139,250,.08);border:1.5px solid rgba(167,139,250,.2)}.cm-cell.tn .cm-cell-tag{color:var(--violet)}.cm-cell.tn .cm-cell-count{color:var(--text)}.cm-cell.tn .cm-cell-pct{color:var(--muted)}.cm-metrics-panel{display:flex;flex-direction:column;gap:10px;padding:15px;background:var(--deep);border:1px solid var(--line);border-radius:12px}.cm-metrics-title{font:700 9px Consolas,monospace;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);padding-bottom:8px;border-bottom:1px solid var(--line)}.cm-metric-row{display:flex;justify-content:space-between;gap:10px}.cm-metric-lbl{font-size:11px;color:var(--muted)}.cm-metric-val{font:700 13px Consolas,monospace;color:var(--text)}.cm-metric-val.good{color:var(--cyan)}.cm-metric-val.warn{color:var(--red)}.cm-metric-val.amber{color:var(--gold)}.cm-bar-item{display:grid;grid-template-columns:1fr 54px;gap:8px;align-items:center}.cm-bar-label{grid-column:1/-1;font-size:10px;color:var(--muted)}.cm-bar-track{height:7px;background:#14213a;border-radius:99px;overflow:hidden}.cm-bar-fill{height:100%;border-radius:99px}.cm-bar-val{font:700 11px Consolas,monospace;text-align:right}@media(max-width:980px){.cm-tech-body{grid-template-columns:1fr}.cm-matrix{grid-template-columns:76px 1fr 1fr}.cm-cell{padding:12px;min-height:94px}.cm-cell-count{font-size:25px}} a{color:var(--teal)} footer{color:var(--dim);padding:28px 38px;border-top:1px solid var(--line);text-align:center}
+@media(max-width:860px){.hero-inner,.grid2{grid-template-columns:1fr} nav{padding:0 18px} .nav{display:none} main,.hero{padding-left:18px;padding-right:18px}}
+.cm-board{display:grid;grid-template-columns:78px 1fr 1fr 160px;grid-template-rows:30px 132px 132px 112px;gap:6px}.cm-board .cm-axis-top{background:var(--deep);border:1px solid var(--line)}.cm-board .cm-axis-left{background:rgba(255,255,255,.025);border:1px solid var(--line);border-radius:8px;justify-content:center;padding:8px;text-align:center}.cm-side,.cm-bottom,.cm-acc{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;background:rgba(255,255,255,.035);border:1px solid var(--line);border-radius:10px;padding:10px}.cm-side-title,.cm-bottom-title{font:800 9px Consolas,monospace;color:var(--muted);letter-spacing:.09em;text-transform:uppercase;margin-bottom:8px}.cm-side-good,.cm-bottom-good,.cm-acc-good{font:700 25px Consolas,monospace;color:var(--cyan);line-height:1}.cm-side-bad,.cm-bottom-bad,.cm-acc-bad{font:700 19px Consolas,monospace;color:rgba(245,158,11,.72);line-height:1.15;margin-top:8px}.cm-acc-title{font:800 9px Consolas,monospace;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:10px}.cm-good-label,.cm-bad-label{font:700 8px Consolas,monospace;letter-spacing:.08em;text-transform:uppercase;margin-top:3px;color:var(--muted)}.cm-board .cm-cell{min-height:auto;justify-content:center}.cm-board .cm-cell-count{font-size:34px}.cm-tech-body.matrix-only{display:block}.cm-legend-note{margin-top:12px;color:var(--muted);font-size:11px;line-height:1.5}@media(max-width:980px){.cm-board{grid-template-columns:64px 1fr 1fr 126px;grid-template-rows:30px 116px 116px 96px}.cm-side-good,.cm-bottom-good,.cm-acc-good{font-size:20px}.cm-side-bad,.cm-bottom-bad,.cm-acc-bad{font-size:16px}.cm-board .cm-cell-count{font-size:27px}}
+</style>
+</head>
+<body>
+<nav><div class="brand">PLOIDY · RESULTS</div><div class="nav"><a href="#ranking">Ranking</a><a href="#rocauc">ROC/Matriz</a><a href="#metodos">Metodologias</a></div></nav>
+<header class="hero">
+  <div class="hero-inner">
+    <div>
+      <div class="eyebrow">Dashboard consolidado com seus resultados</div>
+      <h1>Ploidia embrionária: <em>RNC + TabPFN</em> e modelos tabulares</h1>
+      <p class="sub">Painel gerado somente a partir da pasta organizada de resultados. O ranking principal agora está ordenado por ROC-AUC de teste, mantendo a validação como informação de controle metodológico.</p>
+      <div class="tags"><span class="tag">EfficientNet-B0</span><span class="tag">TabPFN Config 027</span><span class="tag v">Optuna / Blind test</span><span class="tag v">RNC + embeddings + tabela</span></div>
+    </div>
+    <aside class="auc-card">
+      <div class="auc-label">Maior ROC-AUC teste observado</div>
+      <div class="auc">69.4<span>%</span></div>
+      <small>EfficientNet-B0 + TabPFN Config 027</small>
+      <small>trofectoderme + mci + blastocele</small>
+      <div class="prog"><i></i></div>
+    </aside>
+  </div>
+</header>
+<main>
+  <section>
+    <div class="kpis">
+      <div class="kpi"><span>Maior ROC-AUC teste observado</span><strong>69.4%</strong><small>EfficientNet-B0 + TabPFN Config 027 · trofectoderme + mci + blastocele</small></div>
+      <div class="kpi"><span>Melhor ROC-AUC validacao</span><strong>69.3%</strong><small>EfficientNet-B0 + TabPFN Config 027</small></div>
+      <div class="kpi"><span>TabPFN blind test</span><strong>69.2%</strong><small>n=1000 · todas_seguras</small></div>
+      <div class="kpi"><span>Metodologias ranqueadas</span><strong>26</strong><small>ranking_global.xlsx</small></div>
+    </div>
+  </section>
+
+  <section id="ranking">
+    <div class="section-head"><div><h2>Ranking por ROC-AUC de teste</h2><p class="note">Ordenado diretamente pelo ROC-AUC de teste. A coluna ROC de validação fica ao lado para comparar estabilidade entre validação e teste.</p></div></div>
+    <div class="panel"><table><thead><tr><th>#</th><th>Modelo</th><th>ROC teste</th><th>ROC val</th><th>Bal. acc teste</th><th>Sens.</th><th>Esp.</th><th>Força</th></tr></thead><tbody>
+        <tr>
+          <td class="mono">1</td>
+          <td>
+            <strong>EfficientNet-B0 + TabPFN Config 027</strong>
+            <small>trofectoderme + mci + blastocele · conjunto_original</small>
+          </td>
+          <td>69.4%</td>
+          <td>68.9%</td>
+          <td>64.4%</td>
+          <td>82.9%</td>
+          <td>45.8%</td>
+          <td><div class="bar"><i style="width:69.4%"></i></div></td>
+        </tr>
+        
+        <tr>
+          <td class="mono">2</td>
+          <td>
+            <strong>EfficientNet-B0 + TabPFN Config 027</strong>
+            <small>trofectoderme + mci · tf_mci</small>
+          </td>
+          <td>69.1%</td>
+          <td>68.5%</td>
+          <td>63.4%</td>
+          <td>68.2%</td>
+          <td>58.7%</td>
+          <td><div class="bar"><i style="width:69.1%"></i></div></td>
+        </tr>
+        
+        <tr>
+          <td class="mono">3</td>
+          <td>
+            <strong>EfficientNet-B0 + TabPFN Config 027</strong>
+            <small>trofectoderme + blastocele · tf_bl</small>
+          </td>
+          <td>68.9%</td>
+          <td>69.3%</td>
+          <td>63.4%</td>
+          <td>58.7%</td>
+          <td>68.1%</td>
+          <td><div class="bar"><i style="width:68.9%"></i></div></td>
+        </tr>
+        
+        <tr>
+          <td class="mono">4</td>
+          <td>
+            <strong>EfficientNet-B0 + TabPFN Config 027</strong>
+            <small>blastocele · bl</small>
+          </td>
+          <td>68.8%</td>
+          <td>66.3%</td>
+          <td>63.0%</td>
+          <td>69.9%</td>
+          <td>56.0%</td>
+          <td><div class="bar"><i style="width:68.8%"></i></div></td>
+        </tr>
+        
+        <tr>
+          <td class="mono">5</td>
+          <td>
+            <strong>Ensemble 3 RNCs + TabPFN Config 027</strong>
+            <small>trofectoderme + mci + blastocele · conjunto_original</small>
+          </td>
+          <td>68.5%</td>
+          <td>66.4%</td>
+          <td>63.7%</td>
+          <td>51.7%</td>
+          <td>75.6%</td>
+          <td><div class="bar"><i style="width:68.5%"></i></div></td>
+        </tr>
+        
+        <tr>
+          <td class="mono">6</td>
+          <td>
+            <strong>Xception + TabPFN Config 027</strong>
+            <small>trofectoderme + mci + blastocele · conjunto_original</small>
+          </td>
+          <td>68.1%</td>
+          <td>66.3%</td>
+          <td>62.4%</td>
+          <td>72.5%</td>
+          <td>52.3%</td>
+          <td><div class="bar"><i style="width:68.1%"></i></div></td>
+        </tr>
+        
+        <tr>
+          <td class="mono">7</td>
+          <td>
+            <strong>Ensemble 3 RNCs + TabPFN Config 027</strong>
+            <small>trofectoderme + mci · tf_mci</small>
+          </td>
+          <td>68.0%</td>
+          <td>66.6%</td>
+          <td>62.8%</td>
+          <td>66.8%</td>
+          <td>58.8%</td>
+          <td><div class="bar"><i style="width:68.0%"></i></div></td>
+        </tr>
+        
+        <tr>
+          <td class="mono">8</td>
+          <td>
+            <strong>EfficientNet-B0 + TabPFN Config 027</strong>
+            <small>trofectoderme · tf</small>
+          </td>
+          <td>68.0%</td>
+          <td>67.5%</td>
+          <td>62.3%</td>
+          <td>65.0%</td>
+          <td>59.6%</td>
+          <td><div class="bar"><i style="width:68.0%"></i></div></td>
+        </tr>
+        
+        <tr>
+          <td class="mono">9</td>
+          <td>
+            <strong>Ensemble 3 RNCs + TabPFN Config 027</strong>
+            <small>blastocele · bl</small>
+          </td>
+          <td>68.0%</td>
+          <td>66.7%</td>
+          <td>64.0%</td>
+          <td>75.4%</td>
+          <td>52.5%</td>
+          <td><div class="bar"><i style="width:68.0%"></i></div></td>
+        </tr>
+        
+        <tr>
+          <td class="mono">10</td>
+          <td>
+            <strong>Xception + TabPFN Config 027</strong>
+            <small>mci · mci</small>
+          </td>
+          <td>67.7%</td>
+          <td>66.7%</td>
+          <td>63.9%</td>
+          <td>69.7%</td>
+          <td>58.1%</td>
+          <td><div class="bar"><i style="width:67.7%"></i></div></td>
+        </tr>
+        
+        <tr>
+          <td class="mono">11</td>
+          <td>
+            <strong>EfficientNet-B0 + TabPFN Config 027</strong>
+            <small>mci · mci</small>
+          </td>
+          <td>67.7%</td>
+          <td>65.4%</td>
+          <td>62.8%</td>
+          <td>63.0%</td>
+          <td>62.7%</td>
+          <td><div class="bar"><i style="width:67.7%"></i></div></td>
+        </tr>
+        
+        <tr>
+          <td class="mono">12</td>
+          <td>
+            <strong>Ensemble 3 RNCs + TabPFN Config 027</strong>
+            <small>trofectoderme · tf</small>
+          </td>
+          <td>67.4%</td>
+          <td>66.5%</td>
+          <td>63.4%</td>
+          <td>70.2%</td>
+          <td>56.5%</td>
+          <td><div class="bar"><i style="width:67.4%"></i></div></td>
+        </tr>
+        </tbody></table></div>
+  </section>
+
+  <section id="rocauc">
+    <div class="section-head">
+      <div>
+        <h2>ROC-AUC e matrizes de confusão das duas melhores redes</h2>
+        <p class="note">Visualização incorporada a partir da extração feita nos dois melhores modelos do ranking por ROC-AUC de teste. A comparação mostra o comportamento das curvas ROC e, abaixo, a distribuição real/predita de cada rede.</p>
+      </div>
+    </div>
+
+    <div class="visual-grid" style="margin-top:18px">
+      <article class="visual-card">
+        <h3>Top 1 · EfficientNet-B0 + TabPFN</h3>
+        <p>Entrada: trofectoderme + MCI + blastocele</p>
+        <div class="metric-row">
+          <div class="metric-pill"><span>ROC teste</span><strong>69.4%</strong></div>
+          <div class="metric-pill"><span>ROC val</span><strong>68.9%</strong></div>
+          <div class="metric-pill"><span>Sens.</span><strong>82.9%</strong></div>
+          <div class="metric-pill"><span>Esp.</span><strong>45.8%</strong></div>
+        </div>
+        <div class="cm-tech">
+          <div class="cm-tech-head">
+            <div>
+              <div class="cm-tech-title">Matriz de confusão · teste</div>
+              <div class="cm-tech-sub">Classe positiva: euploide · percentuais por linha real</div>
+            </div>
+            <div class="cm-tech-badge">AUC 0.694</div>
+          </div>
+          <div class="cm-tech-body matrix-only">
+            <div class="cm-board">
+              <div class="cm-corner"></div>
+              <div class="cm-axis-top">Pred. Euploide</div>
+              <div class="cm-axis-top">Pred. Aneuploide</div>
+              <div class="cm-corner"></div>
+
+              <div class="cm-axis-left">Real<br>Euploide</div>
+              <div class="cm-cell tp">
+                <div class="cm-cell-tag">VP</div>
+                <div class="cm-cell-count">287</div>
+                <div class="cm-cell-pct">82.9%</div>
+                <div class="cm-cell-desc">Euploide correto</div>
+              </div>
+              <div class="cm-cell fn">
+                <div class="cm-cell-tag">FN</div>
+                <div class="cm-cell-count">59</div>
+                <div class="cm-cell-pct">17.1%</div>
+                <div class="cm-cell-desc">Euploide perdido</div>
+              </div>
+              <div class="cm-side">
+                <div class="cm-side-title">Real Euploide</div>
+                <div class="cm-side-good">82.9%</div>
+                <div class="cm-good-label">correto</div>
+                <div class="cm-side-bad">17.1%</div>
+                <div class="cm-bad-label">erro</div>
+              </div>
+
+              <div class="cm-axis-left">Real<br>Aneuploide</div>
+              <div class="cm-cell fp">
+                <div class="cm-cell-tag">FP</div>
+                <div class="cm-cell-count">282</div>
+                <div class="cm-cell-pct">54.2%</div>
+                <div class="cm-cell-desc">Aneuploide como euploide</div>
+              </div>
+              <div class="cm-cell tn">
+                <div class="cm-cell-tag">VN</div>
+                <div class="cm-cell-count">238</div>
+                <div class="cm-cell-pct">45.8%</div>
+                <div class="cm-cell-desc">Aneuploide correto</div>
+              </div>
+              <div class="cm-side">
+                <div class="cm-side-title">Real Aneuploide</div>
+                <div class="cm-side-good">45.8%</div>
+                <div class="cm-good-label">correto</div>
+                <div class="cm-side-bad">54.2%</div>
+                <div class="cm-bad-label">erro</div>
+              </div>
+
+              <div class="cm-corner"></div>
+              <div class="cm-bottom">
+                <div class="cm-bottom-title">Pred. Euploide</div>
+                <div class="cm-bottom-good">50.4%</div>
+                <div class="cm-good-label">VP / preditos</div>
+                <div class="cm-bottom-bad">49.6%</div>
+              </div>
+              <div class="cm-bottom">
+                <div class="cm-bottom-title">Pred. Aneuploide</div>
+                <div class="cm-bottom-good">80.1%</div>
+                <div class="cm-good-label">VN / preditos</div>
+                <div class="cm-bottom-bad">19.9%</div>
+              </div>
+              <div class="cm-acc">
+                <div class="cm-acc-title">Acurácia balanceada</div>
+                <div class="cm-acc-good">64.4%</div>
+                <div class="cm-good-label">média sens/esp</div>
+                <div class="cm-acc-bad">35.6%</div>
+                <div class="cm-bad-label">lacuna</div>
+              </div>
+            </div>
+            <div class="cm-legend-note">Leitura: blocos laterais mostram o desempenho dentro de cada classe real; blocos inferiores mostram a composição de cada classe predita; o bloco final mostra a acurácia balanceada do teste.</div>
+          </div>
+        </div>
+        <img src="00_INDICE/extracao_matrizes_roc_top2/top1_efficientnet_b0_tf_mci_bl/curva_roc_auc_dashboard.png" alt="Curva ROC-AUC do top 1">
+      </article>
+
+      <article class="visual-card">
+        <h3>Top 2 · EfficientNet-B0 + TabPFN</h3>
+        <p>Entrada: trofectoderme + MCI</p>
+        <div class="metric-row">
+          <div class="metric-pill"><span>ROC teste</span><strong>69.1%</strong></div>
+          <div class="metric-pill"><span>ROC val</span><strong>68.5%</strong></div>
+          <div class="metric-pill"><span>Sens.</span><strong>68.2%</strong></div>
+          <div class="metric-pill"><span>Esp.</span><strong>58.7%</strong></div>
+        </div>
+        <div class="cm-tech">
+          <div class="cm-tech-head">
+            <div>
+              <div class="cm-tech-title">Matriz de confusão · teste</div>
+              <div class="cm-tech-sub">Classe positiva: euploide · percentuais por linha real</div>
+            </div>
+            <div class="cm-tech-badge">AUC 0.691</div>
+          </div>
+          <div class="cm-tech-body matrix-only">
+            <div class="cm-board">
+              <div class="cm-corner"></div>
+              <div class="cm-axis-top">Pred. Euploide</div>
+              <div class="cm-axis-top">Pred. Aneuploide</div>
+              <div class="cm-corner"></div>
+
+              <div class="cm-axis-left">Real<br>Euploide</div>
+              <div class="cm-cell tp">
+                <div class="cm-cell-tag">VP</div>
+                <div class="cm-cell-count">236</div>
+                <div class="cm-cell-pct">68.2%</div>
+                <div class="cm-cell-desc">Euploide correto</div>
+              </div>
+              <div class="cm-cell fn">
+                <div class="cm-cell-tag">FN</div>
+                <div class="cm-cell-count">110</div>
+                <div class="cm-cell-pct">31.8%</div>
+                <div class="cm-cell-desc">Euploide perdido</div>
+              </div>
+              <div class="cm-side">
+                <div class="cm-side-title">Real Euploide</div>
+                <div class="cm-side-good">68.2%</div>
+                <div class="cm-good-label">correto</div>
+                <div class="cm-side-bad">31.8%</div>
+                <div class="cm-bad-label">erro</div>
+              </div>
+
+              <div class="cm-axis-left">Real<br>Aneuploide</div>
+              <div class="cm-cell fp">
+                <div class="cm-cell-tag">FP</div>
+                <div class="cm-cell-count">215</div>
+                <div class="cm-cell-pct">41.3%</div>
+                <div class="cm-cell-desc">Aneuploide como euploide</div>
+              </div>
+              <div class="cm-cell tn">
+                <div class="cm-cell-tag">VN</div>
+                <div class="cm-cell-count">305</div>
+                <div class="cm-cell-pct">58.7%</div>
+                <div class="cm-cell-desc">Aneuploide correto</div>
+              </div>
+              <div class="cm-side">
+                <div class="cm-side-title">Real Aneuploide</div>
+                <div class="cm-side-good">58.7%</div>
+                <div class="cm-good-label">correto</div>
+                <div class="cm-side-bad">41.3%</div>
+                <div class="cm-bad-label">erro</div>
+              </div>
+
+              <div class="cm-corner"></div>
+              <div class="cm-bottom">
+                <div class="cm-bottom-title">Pred. Euploide</div>
+                <div class="cm-bottom-good">52.3%</div>
+                <div class="cm-good-label">VP / preditos</div>
+                <div class="cm-bottom-bad">47.7%</div>
+              </div>
+              <div class="cm-bottom">
+                <div class="cm-bottom-title">Pred. Aneuploide</div>
+                <div class="cm-bottom-good">73.5%</div>
+                <div class="cm-good-label">VN / preditos</div>
+                <div class="cm-bottom-bad">26.5%</div>
+              </div>
+              <div class="cm-acc">
+                <div class="cm-acc-title">Acurácia balanceada</div>
+                <div class="cm-acc-good">63.4%</div>
+                <div class="cm-good-label">média sens/esp</div>
+                <div class="cm-acc-bad">36.6%</div>
+                <div class="cm-bad-label">lacuna</div>
+              </div>
+            </div>
+            <div class="cm-legend-note">Leitura: blocos laterais mostram o desempenho dentro de cada classe real; blocos inferiores mostram a composição de cada classe predita; o bloco final mostra a acurácia balanceada do teste.</div>
+          </div>
+        </div>
+        <img src="00_INDICE/extracao_matrizes_roc_top2/top2_efficientnet_b0_tf_mci/curva_roc_auc_dashboard.png" alt="Curva ROC-AUC do top 2">
+      </article>
+    </div>
+  </section>
+
+  <section>
+    <div class="grid2">
+      <div class="callout">
+        <h3>Leitura principal</h3>
+        <p>O maior ROC-AUC de teste observado foi <strong>69.4%</strong> com <strong>EfficientNet-B0 + TabPFN Config 027</strong>, usando <strong>trofectoderme + mci + blastocele</strong>.</p>
+        <p>Como controle metodológico, o melhor modelo pela validação foi <strong>EfficientNet-B0 + TabPFN Config 027</strong>, usando <strong>trofectoderme + blastocele</strong>, com ROC-AUC de validação 69.3% e ROC-AUC de teste 68.9%.</p>
+      </div>
+      <div class="panel"><table><thead><tr><th>#</th><th>Top por validação</th><th>ROC val</th><th>ROC teste</th><th>AP teste</th></tr></thead><tbody>
+        <tr>
+          <td class="mono">1</td>
+          <td>EfficientNet-B0 + TabPFN Config 027<small>trofectoderme + blastocele</small></td>
+          <td>69.3%</td>
+          <td>68.9%</td>
+          <td>57.2%</td>
+        </tr>
+        
+        <tr>
+          <td class="mono">2</td>
+          <td>EfficientNet-B0 + TabPFN Config 027<small>trofectoderme + mci + blastocele</small></td>
+          <td>68.9%</td>
+          <td>69.4%</td>
+          <td>57.5%</td>
+        </tr>
+        
+        <tr>
+          <td class="mono">3</td>
+          <td>EfficientNet-B0 + TabPFN Config 027<small>trofectoderme + mci</small></td>
+          <td>68.5%</td>
+          <td>69.1%</td>
+          <td>59.7%</td>
+        </tr>
+        
+        <tr>
+          <td class="mono">4</td>
+          <td>ResNet50 + TabPFN Config 027<small>blastocele</small></td>
+          <td>67.9%</td>
+          <td>66.1%</td>
+          <td>55.0%</td>
+        </tr>
+        
+        <tr>
+          <td class="mono">5</td>
+          <td>Xception + TabPFN Config 027<small>blastocele</small></td>
+          <td>67.6%</td>
+          <td>67.4%</td>
+          <td>56.7%</td>
+        </tr>
+        
+        <tr>
+          <td class="mono">6</td>
+          <td>EfficientNet-B0 + TabPFN Config 027<small>trofectoderme</small></td>
+          <td>67.5%</td>
+          <td>68.0%</td>
+          <td>57.1%</td>
+        </tr>
+        
+        <tr>
+          <td class="mono">7</td>
+          <td>Xception + TabPFN Config 027<small>trofectoderme</small></td>
+          <td>67.5%</td>
+          <td>67.1%</td>
+          <td>56.2%</td>
+        </tr>
+        
+        <tr>
+          <td class="mono">8</td>
+          <td>ResNet50 + TabPFN Config 027<small>trofectoderme + blastocele</small></td>
+          <td>67.4%</td>
+          <td>67.1%</td>
+          <td>54.7%</td>
+        </tr>
+        </tbody></table></div>
+    </div>
+  </section>
+
+  <section id="metodos">
+    <div class="section-head"><div><h2>Metodologias avaliadas</h2><p class="note">Resumo das combinações registradas no relatório global multimodal.</p></div></div>
+    <div class="panel"><table><thead><tr><th>Modelo final</th><th>Entrada visual</th><th>RNC</th><th>Modelo tabular</th></tr></thead><tbody>
+            <tr>
+              <td>EfficientNet-B0 + TabTransformer</td>
+              <td>trofectoderme + mci + blastocele</td>
+              <td>EfficientNet-B0</td>
+              <td>TabTransformer</td>
+            </tr>
+            
+            <tr>
+              <td>Ensemble 3 RNCs + TabTransformer</td>
+              <td>trofectoderme + mci + blastocele</td>
+              <td>Ensemble 3 RNCs</td>
+              <td>TabTransformer</td>
+            </tr>
+            
+            <tr>
+              <td>ResNet50 + TabTransformer</td>
+              <td>trofectoderme + mci + blastocele</td>
+              <td>ResNet50</td>
+              <td>TabTransformer</td>
+            </tr>
+            
+            <tr>
+              <td>Xception + TabTransformer</td>
+              <td>trofectoderme + mci + blastocele</td>
+              <td>Xception</td>
+              <td>TabTransformer</td>
+            </tr>
+            
+            <tr>
+              <td>EfficientNet-B0 + TabPFN Config 027</td>
+              <td>trofectoderme + mci + blastocele</td>
+              <td>EfficientNet-B0</td>
+              <td>TabPFN Config 027</td>
+            </tr>
+            
+            <tr>
+              <td>Ensemble 3 RNCs + TabPFN Config 027</td>
+              <td>trofectoderme + mci + blastocele</td>
+              <td>Ensemble 3 RNCs</td>
+              <td>TabPFN Config 027</td>
+            </tr>
+            
+            <tr>
+              <td>ResNet50 + TabPFN Config 027</td>
+              <td>trofectoderme + mci + blastocele</td>
+              <td>ResNet50</td>
+              <td>TabPFN Config 027</td>
+            </tr>
+            
+            <tr>
+              <td>Xception + TabPFN Config 027</td>
+              <td>trofectoderme + mci + blastocele</td>
+              <td>Xception</td>
+              <td>TabPFN Config 027</td>
+            </tr>
+            
+            <tr>
+              <td>EfficientNet-B0 + TabPFN Config 027</td>
+              <td>blastocele</td>
+              <td>EfficientNet-B0</td>
+              <td>TabPFN Config 027</td>
+            </tr>
+            
+            <tr>
+              <td>Ensemble 3 RNCs + TabPFN Config 027</td>
+              <td>blastocele</td>
+              <td>Ensemble 3 RNCs</td>
+              <td>TabPFN Config 027</td>
+            </tr>
+            
+            <tr>
+              <td>ResNet50 + TabPFN Config 027</td>
+              <td>blastocele</td>
+              <td>ResNet50</td>
+              <td>TabPFN Config 027</td>
+            </tr>
+            
+            <tr>
+              <td>Xception + TabPFN Config 027</td>
+              <td>blastocele</td>
+              <td>Xception</td>
+              <td>TabPFN Config 027</td>
+            </tr>
+            
+            <tr>
+              <td>EfficientNet-B0 + TabPFN Config 027</td>
+              <td>mci</td>
+              <td>EfficientNet-B0</td>
+              <td>TabPFN Config 027</td>
+            </tr>
+            
+            <tr>
+              <td>Ensemble 3 RNCs + TabPFN Config 027</td>
+              <td>mci</td>
+              <td>Ensemble 3 RNCs</td>
+              <td>TabPFN Config 027</td>
+            </tr>
+            
+            <tr>
+              <td>ResNet50 + TabPFN Config 027</td>
+              <td>mci</td>
+              <td>ResNet50</td>
+              <td>TabPFN Config 027</td>
+            </tr>
+            
+            <tr>
+              <td>Xception + TabPFN Config 027</td>
+              <td>mci</td>
+              <td>Xception</td>
+              <td>TabPFN Config 027</td>
+            </tr>
+            
+            <tr>
+              <td>EfficientNet-B0 + TabPFN Config 027</td>
+              <td>trofectoderme</td>
+              <td>EfficientNet-B0</td>
+              <td>TabPFN Config 027</td>
+            </tr>
+            
+            <tr>
+              <td>Ensemble 3 RNCs + TabPFN Config 027</td>
+              <td>trofectoderme</td>
+              <td>Ensemble 3 RNCs</td>
+              <td>TabPFN Config 027</td>
+            </tr>
+            </tbody></table></div>
+  </section>
+
+</main>
+<footer>Gerado em 25/06/2026 a partir de RESULTADOS_ORGANIZADOS_POR_METODOLOGIA_20260623. Dados exibidos somente dos seus arquivos locais.</footer>
+</body>
+</html>
